@@ -1,47 +1,33 @@
-const simulacoes = [
-    { nome: "Reserva de emergência", valorInicial: 5000, taxaMensal: 0.008, meses: 12 },
-    { nome: "Viagem internacional", valorInicial: 3000, taxaMensal: 0.010, meses: 24 },
-    { nome: "Aposentadoria complementar", valorInicial: 10000, taxaMensal: 0.007, meses: 60 }
+// Recurso escolhido: Corridas do sistema de Controle de Checkpoints em Corridas
+// de Trekking (pos-projeto-final). Os dados abaixo estão no mesmo formato que a
+// API do projeto devolveria (GET /corridas combinado com GET /corridas/<id>),
+// mas foram fixados aqui apenas como exemplo — esta atividade não consome a API.
+const corridas = [
+    { nome: "Trilha da Serra", totalCheckpoints: 4, totalPassagens: 9 },
+    { nome: "Corrida das Cachoeiras", totalCheckpoints: 3, totalPassagens: 5 },
+    { nome: "Desafio da Mata Atlântica", totalCheckpoints: 5, totalPassagens: 0 }
 ];
 
-function calcularValorFinal(valorInicial, taxaMensal, meses) {
-    return valorInicial * Math.pow(1 + taxaMensal, meses);
-}
+const lista = document.getElementById("lista-corridas");
 
-function formatarMoeda(valor) {
-    return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-}
-
-const lista = document.getElementById("lista-simulacoes");
-
-for (let i = 0; i < simulacoes.length; i++) {
-    const simulacao = simulacoes[i];
-    const valorFinal = calcularValorFinal(simulacao.valorInicial, simulacao.taxaMensal, simulacao.meses);
+for (let i = 0; i < corridas.length; i++) {
+    const corrida = corridas[i];
 
     const item = document.createElement("div");
-    item.className = "simulacao";
+    item.className = "corrida";
 
     const nome = document.createElement("h3");
-    nome.textContent = simulacao.nome;
+    nome.textContent = corrida.nome;
 
-    const valorInicial = document.createElement("p");
-    valorInicial.textContent = `Valor inicial: ${formatarMoeda(simulacao.valorInicial)}`;
+    const checkpoints = document.createElement("p");
+    checkpoints.textContent = `Checkpoints no percurso: ${corrida.totalCheckpoints}`;
 
-    const taxa = document.createElement("p");
-    taxa.textContent = `Taxa mensal: ${(simulacao.taxaMensal * 100).toFixed(2)}%`;
-
-    const prazo = document.createElement("p");
-    prazo.textContent = `Prazo: ${simulacao.meses} meses`;
-
-    const resultado = document.createElement("p");
-    resultado.className = "resultado";
-    resultado.textContent = `Valor estimado ao final: ${formatarMoeda(valorFinal)}`;
+    const passagens = document.createElement("p");
+    passagens.textContent = `Passagens registradas: ${corrida.totalPassagens}`;
 
     item.appendChild(nome);
-    item.appendChild(valorInicial);
-    item.appendChild(taxa);
-    item.appendChild(prazo);
-    item.appendChild(resultado);
+    item.appendChild(checkpoints);
+    item.appendChild(passagens);
 
     lista.appendChild(item);
 }

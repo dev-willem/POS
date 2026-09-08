@@ -4,11 +4,11 @@ Repositório com os trabalhos da pós-graduação, organizados por disciplina.
 
 ## Exercícios de JavaScript (capítulos 1 a 3)
 
-Exercícios de fixação de JavaScript aplicados a um recurso fictício de simulações de investimento. Cada capítulo evolui a mesma lista de simulações.
+Exercícios de fixação de JavaScript aplicados ao recurso **Corridas** do projeto [`pos-projeto-final/`](pos-projeto-final) (sistema de Controle de Checkpoints em Corridas de Trekking). Os dados usados são exemplos estáticos no formato que a API do projeto devolveria — nenhum dos capítulos consome a API de fato. Cada capítulo evolui a mesma lista de corridas.
 
-- [`capitulo-01/`](capitulo-01) — JavaScript na Página Web: lista de simulações representada por objetos simples, renderizada dinamicamente no DOM.
-- [`capitulo-02/`](capitulo-02) — Objetos e Classes em JavaScript: a mesma lista reescrita com a classe `Simulacao` (atributos privados, métodos, `render()`).
-- [`capitulo-03/`](capitulo-03) — Eventos e Interação com a Interface: formulário para editar nome e valor inicial de uma simulação, com eventos, `data-*` e sincronização entre objeto e interface (detalhes no README da pasta).
+- [`capitulo-01/`](capitulo-01) — JavaScript na Página Web: lista de corridas representada por objetos simples, renderizada dinamicamente no DOM.
+- [`capitulo-02/`](capitulo-02) — Objetos e Classes em JavaScript: a mesma lista reescrita com a classe `Corrida` (atributos privados, métodos, `render()`).
+- [`capitulo-03/`](capitulo-03) — Eventos e Interação com a Interface: formulário para editar o nome de uma corrida, com eventos, `data-*` e sincronização entre objeto e interface (detalhes no README da pasta).
 
 Cada pasta é independente: 1 `index.html`, 1 `style.css` e os arquivos JavaScript necessários. Basta abrir o `index.html` da pasta desejada no navegador.
 

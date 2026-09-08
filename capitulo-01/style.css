@@ -11,7 +11,7 @@ h1 {
     text-align: center;
 }
 
-.simulacao {
+.corrida {
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -19,15 +19,10 @@ h1 {
     margin-bottom: 12px;
 }
 
-.simulacao h3 {
+.corrida h3 {
     margin: 0 0 8px;
 }
 
-.simulacao p {
+.corrida p {
     margin: 4px 0;
-}
-
-.resultado {
-    font-weight: bold;
-    color: #1a7f37;
 }

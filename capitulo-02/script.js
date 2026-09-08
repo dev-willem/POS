@@ -1,11 +1,15 @@
-const simulacoes = [
-    new Simulacao("Reserva de emergência", 5000, 0.008, 12),
-    new Simulacao("Viagem internacional", 3000, 0.010, 24),
-    new Simulacao("Aposentadoria complementar", 10000, 0.007, 60)
+// Recurso escolhido: Corridas do sistema de Controle de Checkpoints em Corridas
+// de Trekking (pos-projeto-final). Os dados abaixo estão no mesmo formato que a
+// API do projeto devolveria (GET /corridas combinado com GET /corridas/<id>),
+// mas foram fixados aqui apenas como exemplo — esta atividade não consome a API.
+const corridas = [
+    new Corrida("Trilha da Serra", 4, 9),
+    new Corrida("Corrida das Cachoeiras", 3, 5),
+    new Corrida("Desafio da Mata Atlântica", 5, 0)
 ];
 
-const lista = document.getElementById("lista-simulacoes");
+const lista = document.getElementById("lista-corridas");
 
-for (const simulacao of simulacoes) {
-    lista.appendChild(simulacao.render());
+for (const corrida of corridas) {
+    lista.appendChild(corrida.render());
 }
