@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Registrar passagem</title>
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="marca">
+    Sistema de Controle de Checkpoints
+    <span class="escola">Escola Caminhos da Aventura</span>
+  </div>
+  <nav>
+    <a href="01-corridas.html">Corridas</a>
+    <a href="03-cadastrar-equipe.html">Equipes</a>
+    <a class="ativo" href="04-registrar-passagem.html">Registrar Passagem</a>
+  </nav>
+</div>
+
+<div class="pagina">
+
+  <div class="cabecalho-pagina">
+    <div>
+      <h1>Registrar passagem</h1>
+      <p class="subtitulo">Tela utilizada pelo professor responsável no checkpoint durante a corrida.</p>
+    </div>
+    <span class="contexto-checkpoint">Checkpoint 3 &middot; Travessia Serra Verde 2026</span>
+  </div>
+
+  <div class="cartao">
+    <h2>Local de registro</h2>
+    <div class="grid-cartoes" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 4px;">
+      <div class="mini-cartao">
+        <div class="rotulo">Corrida</div>
+        <div style="font-weight:700;">Travessia Serra Verde 2026</div>
+      </div>
+      <div class="mini-cartao">
+        <div class="rotulo">Checkpoint</div>
+        <div style="font-weight:700;">Nº 3</div>
+      </div>
+      <div class="mini-cartao">
+        <div class="rotulo">Professor responsável</div>
+        <div style="font-weight:700;">Fernanda Lima Torres</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cartao">
+    <h2>Registrar chegada de equipe</h2>
+    <p class="descricao">Selecione a equipe que chegou a este checkpoint. O sistema registra automaticamente o horário da passagem.</p>
+    <div class="grade-form">
+      <div class="campo largo">
+        <label>Equipe</label>
+        <select>
+          <option>Selecione a equipe...</option>
+          <option selected>Equipe Trovão Verde</option>
+          <option>Equipe Águias da Trilha</option>
+          <option>Equipe Raízes da Serra</option>
+          <option>Equipe Vento Sul</option>
+        </select>
+      </div>
+    </div>
+    <div class="barra-acoes">
+      <button class="botao botao-acento">Registrar passagem agora</button>
+    </div>
+  </div>
+
+  <div class="aviso-sucesso">
+    ✓ Passagem registrada: <strong>Equipe Águias da Trilha</strong> no checkpoint 3 às 09:42.
+  </div>
+
+  <div class="cartao">
+    <h2>Últimas passagens registradas neste checkpoint</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Equipe</th>
+          <th style="width:160px">Horário</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Equipe Águias da Trilha</td><td>09:42</td></tr>
+        <tr><td>Equipe Trovão Verde</td><td>09:37</td></tr>
+        <tr><td>Equipe Raízes da Serra</td><td>09:21</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer class="rodape-proto">Protótipo visual &middot; Controle de Checkpoints em Corridas de Trekking</footer>
+</div>
+
+</body>
+</html>

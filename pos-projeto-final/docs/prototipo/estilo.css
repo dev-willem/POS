@@ -1,0 +1,333 @@
+/* Sistema de Controle de Checkpoints - estilo compartilhado do protótipo */
+
+:root {
+  --cor-primaria: #1F6F4A;
+  --cor-primaria-escura: #164F35;
+  --cor-primaria-clara: #E7F1EC;
+  --cor-acento: #D9782D;
+  --cor-acento-clara: #FBEADC;
+  --cor-fundo: #F5F3EE;
+  --cor-superficie: #FFFFFF;
+  --cor-borda: #E1DDD3;
+  --cor-texto: #262922;
+  --cor-texto-suave: #6B6F63;
+  --sombra: 0 1px 2px rgba(30, 30, 20, 0.06), 0 4px 12px rgba(30, 30, 20, 0.06);
+  --raio: 10px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+a { color: inherit; text-decoration: none; }
+
+.topbar {
+  background: var(--cor-primaria-escura);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  height: 64px;
+}
+
+.topbar .marca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.2px;
+}
+
+.topbar .marca .escola {
+  font-weight: 400;
+  font-size: 12px;
+  color: #CFE3D8;
+  display: block;
+}
+
+.topbar nav {
+  display: flex;
+  gap: 6px;
+}
+
+.topbar nav a {
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #DCEEE4;
+}
+
+.topbar nav a.ativo {
+  background: var(--cor-primaria);
+  color: #fff;
+}
+
+.contexto-checkpoint {
+  background: var(--cor-acento);
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.pagina {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 28px 28px 60px;
+}
+
+.cabecalho-pagina {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.cabecalho-pagina h1 {
+  margin: 0 0 4px;
+  font-size: 24px;
+}
+
+.cabecalho-pagina p.subtitulo {
+  margin: 0;
+  color: var(--cor-texto-suave);
+  font-size: 14px;
+}
+
+.trilha {
+  font-size: 12px;
+  color: var(--cor-texto-suave);
+  margin-bottom: 10px;
+}
+
+.trilha .codigo {
+  display: inline-block;
+  background: var(--cor-primaria-clara);
+  color: var(--cor-primaria-escura);
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  margin-right: 6px;
+}
+
+.cartao {
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+  padding: 22px;
+  margin-bottom: 22px;
+}
+
+.cartao h2 {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.cartao h3 {
+  font-size: 14px;
+  margin: 0 0 12px;
+  color: var(--cor-texto);
+}
+
+.cartao .descricao {
+  margin: 0 0 16px;
+  color: var(--cor-texto-suave);
+  font-size: 13px;
+}
+
+.botao {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.botao-primario {
+  background: var(--cor-primaria);
+  color: #fff;
+}
+
+.botao-acento {
+  background: var(--cor-acento);
+  color: #fff;
+}
+
+.botao-secundario {
+  background: #fff;
+  color: var(--cor-texto);
+  border: 1px solid var(--cor-borda);
+}
+
+.botao-texto {
+  background: transparent;
+  color: var(--cor-primaria-escura);
+  padding: 6px 8px;
+}
+
+.barra-acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+  border-top: 1px solid var(--cor-borda);
+  padding-top: 16px;
+}
+
+.grade-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.campo { display: flex; flex-direction: column; gap: 6px; }
+.campo.largo { grid-column: 1 / -1; }
+
+.campo label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cor-texto);
+}
+
+.campo .dica {
+  font-size: 12px;
+  color: var(--cor-texto-suave);
+}
+
+.campo input, .campo select {
+  padding: 10px 12px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #fff;
+  color: var(--cor-texto);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+thead th {
+  text-align: left;
+  background: var(--cor-primaria-clara);
+  color: var(--cor-primaria-escura);
+  padding: 10px 12px;
+  font-weight: 700;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: #FAFAF7; }
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pill-ok { background: var(--cor-primaria-clara); color: var(--cor-primaria-escura); }
+.pill-pendente { background: #F1EFE9; color: var(--cor-texto-suave); }
+.pill-acento { background: var(--cor-acento-clara); color: #9A4E12; }
+
+.grid-cartoes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.mini-cartao {
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  padding: 14px 16px;
+  background: #FCFBF9;
+}
+
+.mini-cartao .numero { font-size: 22px; font-weight: 700; color: var(--cor-primaria-escura); }
+.mini-cartao .rotulo { font-size: 12px; color: var(--cor-texto-suave); }
+
+.aviso-sucesso {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--cor-primaria-clara);
+  color: var(--cor-primaria-escura);
+  border: 1px solid #BFE0CE;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 13.5px;
+  font-weight: 600;
+  margin-bottom: 18px;
+}
+
+.matriz-progresso {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 13px;
+}
+
+.matriz-progresso th, .matriz-progresso td {
+  border: 1px solid var(--cor-borda);
+  text-align: center;
+  padding: 8px 6px;
+}
+
+.matriz-progresso th { background: var(--cor-primaria-clara); color: var(--cor-primaria-escura); }
+.matriz-progresso td.nome-equipe { text-align: left; font-weight: 600; background: #FAFAF7; }
+
+.marca-ok {
+  display: inline-flex;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--cor-primaria);
+  color: #fff;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.marca-vazia {
+  display: inline-flex;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 1.5px dashed var(--cor-borda);
+}
+
+footer.rodape-proto {
+  text-align: center;
+  color: var(--cor-texto-suave);
+  font-size: 11.5px;
+  padding: 18px 0 6px;
+}

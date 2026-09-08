@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Cadastrar equipe</title>
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="marca">
+    Sistema de Controle de Checkpoints
+    <span class="escola">Escola Caminhos da Aventura</span>
+  </div>
+  <nav>
+    <a href="01-corridas.html">Corridas</a>
+    <a class="ativo" href="03-cadastrar-equipe.html">Equipes</a>
+    <a href="04-registrar-passagem.html">Registrar Passagem</a>
+  </nav>
+</div>
+
+<div class="pagina">
+
+  <div class="cabecalho-pagina">
+    <div>
+      <h1>Equipes</h1>
+      <p class="subtitulo">As equipes participantes devem ser previamente cadastradas no sistema antes da competição.</p>
+    </div>
+  </div>
+
+  <div class="cartao">
+    <h2>Cadastrar nova equipe</h2>
+    <div class="grade-form">
+      <div class="campo largo">
+        <label>Identificação da equipe</label>
+        <input type="text" placeholder="Ex.: Equipe Águias da Trilha">
+        <span class="dica">Nome ou código usado para identificar a equipe durante a corrida e nos registros de passagem.</span>
+      </div>
+    </div>
+    <div class="barra-acoes">
+      <button class="botao botao-secundario">Cancelar</button>
+      <button class="botao botao-primario">Salvar equipe</button>
+    </div>
+  </div>
+
+  <div class="cartao">
+    <h2>Equipes cadastradas</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Equipe</th>
+          <th style="width:160px"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Equipe Águias da Trilha</td>
+          <td>
+            <a class="botao botao-secundario" href="06-historico-equipe.html">Histórico</a>
+          </td>
+        </tr>
+        <tr>
+          <td>Equipe Trovão Verde</td>
+          <td>
+            <a class="botao botao-secundario" href="06-historico-equipe.html">Histórico</a>
+          </td>
+        </tr>
+        <tr>
+          <td>Equipe Raízes da Serra</td>
+          <td>
+            <a class="botao botao-secundario" href="06-historico-equipe.html">Histórico</a>
+          </td>
+        </tr>
+        <tr>
+          <td>Equipe Vento Sul</td>
+          <td>
+            <a class="botao botao-secundario" href="06-historico-equipe.html">Histórico</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer class="rodape-proto">Protótipo visual &middot; Controle de Checkpoints em Corridas de Trekking</footer>
+</div>
+
+</body>
+</html>

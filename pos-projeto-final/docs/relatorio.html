@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Atividade 1 — Controle de Checkpoints em Corridas de Trekking</title>
+<style>
+  @page { size: A4; margin: 18mm 18mm; }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    color: #262922;
+    font-size: 13.5px;
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  h1, h2, h3 { color: #164F35; }
+  h2 { font-size: 19px; border-bottom: 2px solid #1F6F4A; padding-bottom: 6px; margin-top: 0; }
+  h3 { font-size: 15px; margin-bottom: 4px; }
+
+  section.folha { page-break-before: always; }
+  section.folha:first-of-type { page-break-before: auto; }
+
+  /* ---------- Capa ---------- */
+  .capa {
+    height: 250mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+  }
+  .capa .topo { margin-top: 10mm; font-size: 13px; color: #6B6F63; }
+  .capa .meio { margin-top: 30mm; }
+  .capa .meio .estudo-caso { font-size: 13px; color: #9A4E12; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 14px; }
+  .capa .meio h1 { font-size: 26px; margin: 0 0 10px; }
+  .capa .meio .subt { font-size: 14px; color: #6B6F63; }
+  .capa .integrantes { text-align: left; max-width: 380px; margin: 0 auto; }
+  .capa .integrantes h4 { font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.5px; color: #6B6F63; margin-bottom: 8px; text-align: center; }
+  .capa .integrantes ul { list-style: none; padding: 0; margin: 0; font-size: 13.5px; }
+  .capa .integrantes li { padding: 3px 0; text-align: center; }
+  .capa .rodape { font-size: 12px; color: #6B6F63; margin-bottom: 6mm; }
+
+  /* ---------- Conteudo geral ---------- */
+  .intro p { text-align: justify; }
+
+  table.tabela-req { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 14px; }
+  table.tabela-req th { background: #E7F1EC; color: #164F35; text-align: left; padding: 8px 10px; border: 1px solid #C9DED2; }
+  table.tabela-req td { padding: 8px 10px; border: 1px solid #E1DDD3; vertical-align: top; }
+  table.tabela-req td.codigo-rf { font-weight: 700; color: #164F35; white-space: nowrap; }
+
+  .bloco-rnf { margin-top: 26px; }
+
+  .diagrama-wrap { text-align: center; margin-top: 16px; }
+  .diagrama-wrap svg { width: 100%; max-width: 100%; height: auto; }
+
+  .atores-lista, .entidades-lista { font-size: 13px; margin-top: 14px; }
+  .atores-lista li, .entidades-lista li { margin-bottom: 6px; }
+
+  .nota { background: #FBEADC; border: 1px solid #EFCBA3; border-radius: 6px; padding: 10px 14px; font-size: 12px; color: #7A3D0E; margin-top: 16px; }
+
+  /* ---------- Prototipo ---------- */
+  .tela-proto .rotulo-tela { font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; color: #9A4E12; font-weight: 700; margin-bottom: 4px; }
+  .tela-proto .desc-tela { color: #444; margin-top: 4px; margin-bottom: 14px; text-align: justify; }
+  .moldura-print { border: 1px solid #E1DDD3; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .moldura-print img { width: 100%; display: block; }
+
+  footer.pe-pagina { position: fixed; bottom: 8mm; left: 18mm; right: 18mm; font-size: 10px; color: #999; text-align: center; }
+</style>
+</head>
+<body>
+
+  <!-- ============ CAPA ============ -->
+  <section class="folha capa">
+    <div class="topo">
+      Instituto Federal de Educação, Ciência e Tecnologia do Rio Grande do Norte (IFRN) — Campus Zona Norte<br>
+      Disciplina: Programação Orientada a Serviços
+    </div>
+    <div class="meio">
+      <div class="estudo-caso">Estudo de Caso 3 — Controle de Checkpoints em Corridas de Trekking</div>
+      <h1>Sistema de Controle de Checkpoints<br>em Corridas de Trekking</h1>
+      <p class="subt">Atividade 1 — Análise, Modelagem e Prototipação do Sistema</p>
+    </div>
+    <div class="integrantes">
+      <h4>Integrantes</h4>
+      <ul>
+          <li>Allyfh Fernando da Silva Pontes</li>
+          <li>Álvaro Antônio Oliveira de Medeiros</li>
+          <li>Diego de Andrade dos Santos Silva</li>
+          <li>Douglas Pierry Damasceno da Silva</li>
+          <li>Ryann Deyv's Araújo Costa</li>
+          <li>Willemberg Lopes de Mendonça Filho</li>
+      </ul>
+    </div>
+    <div class="rodape">Escola Caminhos da Aventura &middot; 2026</div>
+  </section>
+
+  <!-- ============ 1. INTRODUCAO ============ -->
+  <section class="folha intro">
+    <h2>1. Introdução</h2>
+    <p>
+      A Escola Caminhos da Aventura pretende realizar competições de corrida de aventura no estilo trekking,
+      nas quais equipes de competidores percorrem um trajeto definido, passando por diversos pontos de controle
+      (checkpoints) espalhados ao longo do percurso. Por não possuir recursos para instalar totens eletrônicos
+      de registro automático em todos os checkpoints, a escola decidiu adotar um sistema informatizado operado
+      pelos professores responsáveis por cada ponto de controle, que registram manualmente a passagem de cada
+      equipe.
+    </p>
+    <p>
+      Antes de uma competição, um responsável cadastra a corrida, define os checkpoints que compõem o percurso
+      (cada um identificado por uma numeração e associado a um professor responsável) e cadastra previamente as
+      equipes participantes. Durante a prova, ao chegar a um checkpoint, o professor responsável registra a
+      passagem da equipe, informando a corrida, o checkpoint e a equipe — o sistema grava automaticamente o
+      horário do registro. Como esses registros são feitos em tempo real, a organização pode acompanhar a
+      progressão das equipes enquanto a prova acontece, verificando quais checkpoints já foram alcançados por
+      cada equipe, além de consultar posteriormente o histórico de passagens de uma equipe específica.
+    </p>
+    <p>
+      O objetivo desta atividade não é implementar o sistema, mas compreender o problema descrito no estudo de
+      caso e representar uma primeira especificação da solução por meio de quatro artefatos coerentes entre si:
+      a tabela de requisitos, o diagrama de casos de uso, o diagrama entidade-relacionamento (DER) e o protótipo
+      visual das principais telas, apresentados nas seções seguintes.
+    </p>
+  </section>
+
+  <!-- ============ 2. REQUISITOS ============ -->
+  <section class="folha">
+    <h2>2. Requisitos do Sistema</h2>
+    <p>Os requisitos abaixo foram derivados diretamente da descrição do estudo de caso.</p>
+
+    <h3>2.1 Requisitos Funcionais</h3>
+    <table class="tabela-req">
+      <thead><tr><th style="width:60px;">Código</th><th style="width:230px;">Requisito</th><th>Descrição</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="codigo-rf">RF01</td>
+          <td>Cadastrar corrida</td>
+          <td>O sistema deve permitir que um responsável cadastre uma corrida, informando seus dados e os checkpoints que compõem o percurso.</td>
+        </tr>
+        <tr>
+          <td class="codigo-rf">RF02</td>
+          <td>Cadastrar checkpoint</td>
+          <td>O sistema deve permitir cadastrar os checkpoints de uma corrida, informando o número de identificação do checkpoint (usado também no local físico da prova) e o professor responsável por ele.</td>
+        </tr>
+        <tr>
+          <td class="codigo-rf">RF03</td>
+          <td>Cadastrar equipe</td>
+          <td>O sistema deve permitir cadastrar previamente as equipes participantes, informando sua identificação.</td>
+        </tr>
+        <tr>
+          <td class="codigo-rf">RF04</td>
+          <td>Registrar passagem de equipe em checkpoint</td>
+          <td>O sistema deve permitir que o professor responsável pelo checkpoint registre a passagem de uma equipe, informando a corrida, o checkpoint e a equipe, armazenando automaticamente o momento (data/hora) do registro.</td>
+        </tr>
+        <tr>
+          <td class="codigo-rf">RF05</td>
+          <td>Consultar corrida</td>
+          <td>O sistema deve permitir consultar uma corrida, visualizando seus checkpoints e as passagens já registradas pelas equipes, com atualização em tempo real durante a prova.</td>
+        </tr>
+        <tr>
+          <td class="codigo-rf">RF06</td>
+          <td>Consultar histórico de equipe</td>
+          <td>O sistema deve permitir consultar o histórico de uma equipe, identificando os checkpoints já percorridos por ela e os respectivos horários de passagem.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="bloco-rnf">
+      <h3>2.2 Requisitos Não Funcionais</h3>
+      <table class="tabela-req">
+        <thead><tr><th style="width:60px;">Código</th><th style="width:230px;">Requisito</th><th>Descrição</th></tr></thead>
+        <tbody>
+        <tr>
+          <td class="codigo-rf">RNF01</td>
+          <td>Consistência dos registros</td>
+          <td>O sistema deve garantir que cada passagem registrada esteja corretamente associada à corrida, ao checkpoint e à equipe correspondentes, de modo que os registros de uma corrida não sejam confundidos com os de outra competição realizada pela escola.</td>
+        </tr>
+        <tr>
+          <td class="codigo-rf">RNF02</td>
+          <td>Disponibilidade em tempo real</td>
+          <td>O sistema deve permitir a consulta das passagens registradas durante a realização da prova, possibilitando o acompanhamento em tempo real da progressão das equipes pelo percurso.</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ 3. CASOS DE USO ============ -->
+  <section class="folha">
+    <h2>3. Diagrama de Casos de Uso</h2>
+    <p>
+      O sistema é utilizado por dois perfis de usuário. O <strong>Responsável</strong> (organizador da corrida)
+      cadastra as corridas, os checkpoints do percurso e as equipes participantes, além de consultar o andamento
+      das corridas e o histórico das equipes. O <strong>Professor</strong> responsável por um checkpoint utiliza
+      o sistema durante a prova para registrar a passagem das equipes por aquele ponto de controle.
+    </p>
+    <ul class="atores-lista">
+      <li><strong>Responsável (organizador):</strong> UC01 Cadastrar corrida, UC02 Cadastrar checkpoint, UC03 Cadastrar equipe, UC05 Consultar corrida, UC06 Consultar histórico de equipe.</li>
+      <li><strong>Professor (responsável pelo checkpoint):</strong> UC04 Registrar passagem de equipe em checkpoint.</li>
+    </ul>
+    <p style="font-size:12.5px; color:#555;">
+      O caso de uso <em>UC01 — Cadastrar corrida</em> inclui (<code>«include»</code>) o caso de uso
+      <em>UC02 — Cadastrar checkpoint</em>, pois os checkpoints do percurso são definidos como parte do
+      cadastro da corrida.
+    </p>
+    <div class="diagrama-wrap">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 640" font-family="Segoe UI, Arial, sans-serif">
+  <rect x="0" y="0" width="1040" height="640" fill="#ffffff"/>
+
+  <!-- System boundary -->
+  <rect x="190" y="34" width="660" height="576" rx="14" fill="#FAFAF7" stroke="#1F6F4A" stroke-width="2"/>
+  <text x="520" y="66" text-anchor="middle" font-size="17" font-weight="700" fill="#164F35">Sistema de Controle de Checkpoints</text>
+
+  <!-- Actor: Responsavel -->
+  <g stroke="#262922" stroke-width="2" fill="none" stroke-linecap="round">
+    <circle cx="80" cy="298" r="12" fill="#ffffff"/>
+    <line x1="80" y1="310" x2="80" y2="352"/>
+    <line x1="58" y1="326" x2="102" y2="326"/>
+    <line x1="80" y1="352" x2="62" y2="386"/>
+    <line x1="80" y1="352" x2="98" y2="386"/>
+  </g>
+  <text x="80" y="404" text-anchor="middle" font-size="13" font-weight="700" fill="#262922">Responsável</text>
+  <text x="80" y="420" text-anchor="middle" font-size="11.5" fill="#6B6F63">(Organizador</text>
+  <text x="80" y="434" text-anchor="middle" font-size="11.5" fill="#6B6F63">da corrida)</text>
+
+  <!-- Actor: Professor -->
+  <g stroke="#262922" stroke-width="2" fill="none" stroke-linecap="round">
+    <circle cx="960" cy="298" r="12" fill="#ffffff"/>
+    <line x1="960" y1="310" x2="960" y2="352"/>
+    <line x1="938" y1="326" x2="982" y2="326"/>
+    <line x1="960" y1="352" x2="942" y2="386"/>
+    <line x1="960" y1="352" x2="978" y2="386"/>
+  </g>
+  <text x="960" y="404" text-anchor="middle" font-size="13" font-weight="700" fill="#262922">Professor</text>
+  <text x="960" y="420" text-anchor="middle" font-size="11.5" fill="#6B6F63">(Responsável pelo</text>
+  <text x="960" y="434" text-anchor="middle" font-size="11.5" fill="#6B6F63">checkpoint)</text>
+
+  <!-- Association lines: Responsavel -->
+  <g stroke="#8A8D82" stroke-width="1.4">
+    <line x1="98" y1="310" x2="255" y2="130"/>
+    <line x1="98" y1="320" x2="255" y2="230"/>
+    <line x1="100" y1="326" x2="255" y2="330"/>
+    <line x1="98" y1="335" x2="255" y2="430"/>
+    <line x1="98" y1="345" x2="245" y2="530"/>
+  </g>
+
+  <!-- Association line: Professor -->
+  <g stroke="#8A8D82" stroke-width="1.4">
+    <line x1="942" y1="320" x2="822" y2="312"/>
+  </g>
+
+  <!-- Use case: UC01 Cadastrar corrida -->
+  <ellipse cx="380" cy="130" rx="125" ry="34" fill="#E7F1EC" stroke="#1F6F4A" stroke-width="1.6"/>
+  <text x="380" y="134" text-anchor="middle" font-size="13.5" fill="#164F35" font-weight="600">Cadastrar corrida</text>
+
+  <!-- Use case: UC02 Cadastrar checkpoint -->
+  <ellipse cx="380" cy="230" rx="125" ry="34" fill="#E7F1EC" stroke="#1F6F4A" stroke-width="1.6"/>
+  <text x="380" y="234" text-anchor="middle" font-size="13.5" fill="#164F35" font-weight="600">Cadastrar checkpoint</text>
+
+  <!-- Include relationship UC01 -> UC02 -->
+  <line x1="380" y1="164" x2="380" y2="195" stroke="#164F35" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#arrowOpen)"/>
+  <text x="470" y="200" text-anchor="middle" font-size="11.5" fill="#164F35" font-style="italic">«include»</text>
+
+  <!-- Use case: UC03 Cadastrar equipe -->
+  <ellipse cx="380" cy="330" rx="125" ry="34" fill="#E7F1EC" stroke="#1F6F4A" stroke-width="1.6"/>
+  <text x="380" y="334" text-anchor="middle" font-size="13.5" fill="#164F35" font-weight="600">Cadastrar equipe</text>
+
+  <!-- Use case: UC05 Consultar corrida -->
+  <ellipse cx="380" cy="430" rx="125" ry="34" fill="#E7F1EC" stroke="#1F6F4A" stroke-width="1.6"/>
+  <text x="380" y="434" text-anchor="middle" font-size="13.5" fill="#164F35" font-weight="600">Consultar corrida</text>
+
+  <!-- Use case: UC06 Consultar historico de equipe -->
+  <ellipse cx="370" cy="530" rx="135" ry="38" fill="#E7F1EC" stroke="#1F6F4A" stroke-width="1.6"/>
+  <text x="370" y="524" text-anchor="middle" font-size="13.5" fill="#164F35" font-weight="600">
+    <tspan x="370" dy="0">Consultar histórico</tspan>
+    <tspan x="370" dy="18">de equipe</tspan>
+  </text>
+
+  <!-- Use case: UC04 Registrar passagem -->
+  <ellipse cx="675" cy="312" rx="150" ry="46" fill="#FBEADC" stroke="#D9782D" stroke-width="1.6"/>
+  <text x="675" y="306" text-anchor="middle" font-size="13.5" fill="#9A4E12" font-weight="600">
+    <tspan x="675" dy="0">Registrar passagem de</tspan>
+    <tspan x="675" dy="18">equipe em checkpoint</tspan>
+  </text>
+
+  <defs>
+    <marker id="arrowOpen" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8" fill="none" stroke="#164F35" stroke-width="1.4"/>
+    </marker>
+  </defs>
+
+  <!-- Legend -->
+  <g font-size="11.5" fill="#6B6F63">
+    <line x1="210" y1="576" x2="240" y2="576" stroke="#8A8D82" stroke-width="1.4"/>
+    <text x="248" y="580">associação</text>
+    <line x1="330" y1="576" x2="360" y2="576" stroke="#164F35" stroke-width="1.4" stroke-dasharray="5,4"/>
+    <text x="368" y="580">«include»</text>
+  </g>
+</svg>
+
+    </div>
+  </section>
+
+  <!-- ============ 4. DER ============ -->
+  <section class="folha">
+    <h2>4. Diagrama Entidade-Relacionamento (DER)</h2>
+    <p>As entidades abaixo representam os dados que o sistema precisa armazenar, de acordo com o estudo de caso:</p>
+    <ul class="entidades-lista">
+      <li><strong>Corrida</strong> — competição cadastrada pela escola, identificada por um nome.</li>
+      <li><strong>Checkpoint</strong> — ponto de controle do percurso de uma corrida, identificado por uma numeração e associado a um professor responsável.</li>
+      <li><strong>Professor</strong> — pessoa responsável por um ou mais checkpoints, encarregada de registrar as passagens no local.</li>
+      <li><strong>Equipe</strong> — equipe participante, previamente cadastrada no sistema.</li>
+      <li><strong>Passagem</strong> — registro da passagem de uma equipe por um checkpoint de uma corrida, contendo o momento (data/hora) em que ocorreu.</li>
+    </ul>
+    <div class="diagrama-wrap">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 720" font-family="Segoe UI, Arial, sans-serif">
+  <rect x="0" y="0" width="1080" height="720" fill="#ffffff"/>
+
+  <defs>
+    <marker id="pe" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <circle cx="3" cy="3" r="2.4" fill="#164F35"/>
+    </marker>
+  </defs>
+
+  <!-- ================= Relationship lines (drawn first, under boxes) ================= -->
+  <g stroke="#6B6F63" stroke-width="1.4" fill="none">
+    <line x1="290" y1="95"  x2="450" y2="222"/>                <!-- Corrida - Checkpoint -->
+    <line x1="915" y1="140" x2="650" y2="222"/>                <!-- Professor - Checkpoint -->
+    <line x1="170" y1="140" x2="330" y2="440"/>                <!-- Corrida - Passagem -->
+    <line x1="550" y1="352" x2="500" y2="440"/>                <!-- Checkpoint - Passagem -->
+    <line x1="800" y1="505" x2="570" y2="524"/>                <!-- Equipe - Passagem -->
+  </g>
+
+  <!-- Relationship labels + cardinalities -->
+  <g font-size="12" fill="#164F35">
+    <text x="330" y="150" text-anchor="middle" font-weight="700" font-style="italic">possui</text>
+    <text x="305" y="118" font-size="11" fill="#6B6F63">(1,N)</text>
+    <text x="420" y="212" font-size="11" fill="#6B6F63">(1,1)</text>
+
+    <text x="770" y="185" text-anchor="middle" font-weight="700" font-style="italic">é responsável por</text>
+    <text x="880" y="163" font-size="11" fill="#6B6F63">(0,N)</text>
+    <text x="655" y="212" font-size="11" fill="#6B6F63">(1,1)</text>
+
+    <text x="185" y="300" font-weight="700" font-style="italic">contém</text>
+    <text x="178" y="163" font-size="11" fill="#6B6F63">(0,N)</text>
+    <text x="335" y="430" font-size="11" fill="#6B6F63">(1,1)</text>
+
+    <text x="590" y="405" text-anchor="middle" font-weight="700" font-style="italic">gera</text>
+    <text x="558" y="378" font-size="11" fill="#6B6F63">(0,N)</text>
+    <text x="470" y="432" font-size="11" fill="#6B6F63">(1,1)</text>
+
+    <text x="700" y="500" text-anchor="middle" font-weight="700" font-style="italic">realiza</text>
+    <text x="745" y="495" font-size="11" fill="#6B6F63">(0,N)</text>
+    <text x="580" y="516" font-size="11" fill="#6B6F63">(1,1)</text>
+  </g>
+
+  <!-- ================= Entity: Corrida ================= -->
+  <g>
+    <rect x="50" y="50" width="240" height="90" fill="#ffffff" stroke="#1F6F4A" stroke-width="1.6" rx="4"/>
+    <rect x="50" y="50" width="240" height="32" fill="#1F6F4A" rx="4"/>
+    <rect x="50" y="66" width="240" height="16" fill="#1F6F4A"/>
+    <text x="170" y="71" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff">Corrida</text>
+    <text x="64" y="98"  font-size="12.5" fill="#262922" font-weight="700">id_corrida <tspan fill="#1F6F4A">(PK)</tspan></text>
+    <text x="64" y="124" font-size="12.5" fill="#262922">nome</text>
+  </g>
+
+  <!-- ================= Entity: Professor ================= -->
+  <g>
+    <rect x="800" y="50" width="230" height="90" fill="#ffffff" stroke="#1F6F4A" stroke-width="1.6" rx="4"/>
+    <rect x="800" y="50" width="230" height="32" fill="#1F6F4A" rx="4"/>
+    <rect x="800" y="66" width="230" height="16" fill="#1F6F4A"/>
+    <text x="915" y="71" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff">Professor</text>
+    <text x="814" y="98"  font-size="12.5" fill="#262922" font-weight="700">id_professor <tspan fill="#1F6F4A">(PK)</tspan></text>
+    <text x="814" y="124" font-size="12.5" fill="#262922">nome</text>
+  </g>
+
+  <!-- ================= Entity: Checkpoint ================= -->
+  <g>
+    <rect x="420" y="210" width="260" height="142" fill="#ffffff" stroke="#1F6F4A" stroke-width="1.6" rx="4"/>
+    <rect x="420" y="210" width="260" height="32" fill="#1F6F4A" rx="4"/>
+    <rect x="420" y="226" width="260" height="16" fill="#1F6F4A"/>
+    <text x="550" y="231" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff">Checkpoint</text>
+    <text x="434" y="258" font-size="12.5" fill="#262922" font-weight="700">id_checkpoint <tspan fill="#1F6F4A">(PK)</tspan></text>
+    <text x="434" y="284" font-size="12.5" fill="#262922">numero</text>
+    <text x="434" y="310" font-size="12.5" fill="#262922">id_corrida <tspan fill="#9A4E12">(FK)</tspan></text>
+    <text x="434" y="336" font-size="12.5" fill="#262922">id_professor <tspan fill="#9A4E12">(FK)</tspan></text>
+  </g>
+
+  <!-- ================= Entity: Passagem ================= -->
+  <g>
+    <rect x="270" y="440" width="300" height="168" fill="#ffffff" stroke="#D9782D" stroke-width="1.8" rx="4"/>
+    <rect x="270" y="440" width="300" height="32" fill="#D9782D" rx="4"/>
+    <rect x="270" y="456" width="300" height="16" fill="#D9782D"/>
+    <text x="420" y="461" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff">Passagem</text>
+    <text x="284" y="488" font-size="12.5" fill="#262922" font-weight="700">id_passagem <tspan fill="#D9782D">(PK)</tspan></text>
+    <text x="284" y="514" font-size="12.5" fill="#262922">momento (data/hora)</text>
+    <text x="284" y="540" font-size="12.5" fill="#262922">id_corrida <tspan fill="#9A4E12">(FK)</tspan></text>
+    <text x="284" y="566" font-size="12.5" fill="#262922">id_checkpoint <tspan fill="#9A4E12">(FK)</tspan></text>
+    <text x="284" y="592" font-size="12.5" fill="#262922">id_equipe <tspan fill="#9A4E12">(FK)</tspan></text>
+  </g>
+
+  <!-- ================= Entity: Equipe ================= -->
+  <g>
+    <rect x="800" y="460" width="230" height="90" fill="#ffffff" stroke="#1F6F4A" stroke-width="1.6" rx="4"/>
+    <rect x="800" y="460" width="230" height="32" fill="#1F6F4A" rx="4"/>
+    <rect x="800" y="476" width="230" height="16" fill="#1F6F4A"/>
+    <text x="915" y="481" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff">Equipe</text>
+    <text x="814" y="508" font-size="12.5" fill="#262922" font-weight="700">id_equipe <tspan fill="#1F6F4A">(PK)</tspan></text>
+    <text x="814" y="534" font-size="12.5" fill="#262922">nome</text>
+  </g>
+
+  <!-- Legend -->
+  <g font-size="11.5" fill="#6B6F63">
+    <text x="50" y="670" font-weight="700" fill="#262922">Legenda:</text>
+    <text x="50" y="690">(PK) = identificador (chave primária)     |     (FK) = chave estrangeira     |     (min,max) = cardinalidade mínima e máxima</text>
+  </g>
+</svg>
+
+    </div>
+    <div class="nota">
+      A entidade <strong>Passagem</strong> associa Corrida, Checkpoint e Equipe, garantindo que cada registro
+      esteja vinculado à corrida correta (RNF01) e permitindo tanto a consulta de uma corrida (RF05) quanto o
+      histórico de uma equipe (RF06) a partir da mesma informação.
+    </div>
+  </section>
+
+  <!-- ============ 5. PROTOTIPO ============ -->
+  <section class="folha">
+    <h2>5. Protótipo Visual</h2>
+    <p>
+      O protótipo foi desenvolvido em HTML e CSS (Opção B), representando as principais telas do sistema descrito
+      nos requisitos e nos casos de uso. Nenhuma lógica de sistema foi implementada — as telas a seguir são
+      capturas do protótipo navegável, com dados de exemplo ilustrativos.
+    </p>
+  </section>
+  
+    <section class="folha tela-proto">
+      <div class="rotulo-tela">Tela 1 &middot; RF relacionado(s): RF01, RF05</div>
+      <h3>Corridas cadastradas</h3>
+      <p class="desc-tela">Ponto de entrada do sistema: lista as corridas já cadastradas, permite iniciar o cadastro de uma nova corrida e acessar a consulta de uma corrida existente.</p>
+      <div class="moldura-print">
+        <img src="screenshots/01-corridas.png" alt="Corridas cadastradas">
+      </div>
+    </section>
+
+    <section class="folha tela-proto">
+      <div class="rotulo-tela">Tela 2 &middot; RF relacionado(s): RF01, RF02</div>
+      <h3>Cadastrar corrida</h3>
+      <p class="desc-tela">Formulário para registrar os dados da corrida e, na mesma tela, os checkpoints que fazem parte do percurso — cada um com seu número identificador e o professor responsável.</p>
+      <div class="moldura-print">
+        <img src="screenshots/02-cadastrar-corrida.png" alt="Cadastrar corrida">
+      </div>
+    </section>
+
+    <section class="folha tela-proto">
+      <div class="rotulo-tela">Tela 3 &middot; RF relacionado(s): RF03</div>
+      <h3>Cadastrar equipe</h3>
+      <p class="desc-tela">Cadastro prévio das equipes participantes, exibindo também a lista de equipes já registradas, com acesso ao histórico de cada uma.</p>
+      <div class="moldura-print">
+        <img src="screenshots/03-cadastrar-equipe.png" alt="Cadastrar equipe">
+      </div>
+    </section>
+
+    <section class="folha tela-proto">
+      <div class="rotulo-tela">Tela 4 &middot; RF relacionado(s): RF04</div>
+      <h3>Registrar passagem</h3>
+      <p class="desc-tela">Tela utilizada pelo professor responsável no checkpoint durante a corrida: o contexto (corrida, checkpoint e professor) já está definido, restando apenas selecionar a equipe que chegou para registrar sua passagem, com o horário gravado automaticamente.</p>
+      <div class="moldura-print">
+        <img src="screenshots/04-registrar-passagem.png" alt="Registrar passagem">
+      </div>
+    </section>
+
+    <section class="folha tela-proto">
+      <div class="rotulo-tela">Tela 5 &middot; RF relacionado(s): RF05</div>
+      <h3>Consultar corrida</h3>
+      <p class="desc-tela">Visão consolidada de uma corrida: checkpoints do percurso, progressão das equipes (quais checkpoints cada equipe já alcançou e quais ainda não) e a lista de passagens registradas, atualizada em tempo real.</p>
+      <div class="moldura-print">
+        <img src="screenshots/05-consultar-corrida.png" alt="Consultar corrida">
+      </div>
+    </section>
+
+    <section class="folha tela-proto">
+      <div class="rotulo-tela">Tela 6 &middot; RF relacionado(s): RF06</div>
+      <h3>Histórico da equipe</h3>
+      <p class="desc-tela">Histórico de uma equipe específica, organizado por corrida, mostrando os checkpoints já percorridos e os respectivos horários de passagem.</p>
+      <div class="moldura-print">
+        <img src="screenshots/06-historico-equipe.png" alt="Histórico da equipe">
+      </div>
+    </section>
+
+  <!-- ============ 6. RASTREABILIDADE ============ -->
+  <section class="folha">
+    <h2>6. Rastreabilidade entre os Artefatos</h2>
+    <p>
+      A tabela a seguir demonstra a coerência entre os quatro artefatos produzidos, relacionando cada requisito
+      funcional ao respectivo caso de uso, às entidades do DER envolvidas e à tela do protótipo correspondente.
+    </p>
+    <table class="tabela-req">
+      <thead><tr><th style="width:55px;">RF</th><th style="width:230px;">Caso de uso</th><th style="width:190px;">Entidades envolvidas</th><th>Tela do protótipo</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="codigo-rf">RF01</td>
+          <td>UC01 — Cadastrar corrida</td>
+          <td>Corrida, Checkpoint</td>
+          <td>Tela 2 — Cadastrar corrida</td>
+        </tr>
+        <tr>
+          <td class="codigo-rf">RF02</td>
+          <td>UC02 — Cadastrar checkpoint</td>
+          <td>Checkpoint, Professor</td>
+          <td>Tela 2 — Cadastrar corrida</td>
+        </tr>
+        <tr>
+          <td class="codigo-rf">RF03</td>
+          <td>UC03 — Cadastrar equipe</td>
+          <td>Equipe</td>
+          <td>Tela 3 — Cadastrar equipe</td>
+        </tr>
+        <tr>
+          <td class="codigo-rf">RF04</td>
+          <td>UC04 — Registrar passagem de equipe em checkpoint</td>
+          <td>Passagem, Corrida, Checkpoint, Equipe</td>
+          <td>Tela 4 — Registrar passagem</td>
+        </tr>
+        <tr>
+          <td class="codigo-rf">RF05</td>
+          <td>UC05 — Consultar corrida</td>
+          <td>Corrida, Checkpoint, Passagem</td>
+          <td>Tela 1 e Tela 5</td>
+        </tr>
+        <tr>
+          <td class="codigo-rf">RF06</td>
+          <td>UC06 — Consultar histórico de equipe</td>
+          <td>Equipe, Passagem</td>
+          <td>Tela 6 — Histórico da equipe</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+</body>
+</html>

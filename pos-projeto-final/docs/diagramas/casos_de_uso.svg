@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 640" font-family="Segoe UI, Arial, sans-serif">
+  <rect x="0" y="0" width="1040" height="640" fill="#ffffff"/>
+
+  <!-- System boundary -->
+  <rect x="190" y="34" width="660" height="576" rx="14" fill="#FAFAF7" stroke="#1F6F4A" stroke-width="2"/>
+  <text x="520" y="66" text-anchor="middle" font-size="17" font-weight="700" fill="#164F35">Sistema de Controle de Checkpoints</text>
+
+  <!-- Actor: Responsavel -->
+  <g stroke="#262922" stroke-width="2" fill="none" stroke-linecap="round">
+    <circle cx="80" cy="298" r="12" fill="#ffffff"/>
+    <line x1="80" y1="310" x2="80" y2="352"/>
+    <line x1="58" y1="326" x2="102" y2="326"/>
+    <line x1="80" y1="352" x2="62" y2="386"/>
+    <line x1="80" y1="352" x2="98" y2="386"/>
+  </g>
+  <text x="80" y="404" text-anchor="middle" font-size="13" font-weight="700" fill="#262922">Responsável</text>
+  <text x="80" y="420" text-anchor="middle" font-size="11.5" fill="#6B6F63">(Organizador</text>
+  <text x="80" y="434" text-anchor="middle" font-size="11.5" fill="#6B6F63">da corrida)</text>
+
+  <!-- Actor: Professor -->
+  <g stroke="#262922" stroke-width="2" fill="none" stroke-linecap="round">
+    <circle cx="960" cy="298" r="12" fill="#ffffff"/>
+    <line x1="960" y1="310" x2="960" y2="352"/>
+    <line x1="938" y1="326" x2="982" y2="326"/>
+    <line x1="960" y1="352" x2="942" y2="386"/>
+    <line x1="960" y1="352" x2="978" y2="386"/>
+  </g>
+  <text x="960" y="404" text-anchor="middle" font-size="13" font-weight="700" fill="#262922">Professor</text>
+  <text x="960" y="420" text-anchor="middle" font-size="11.5" fill="#6B6F63">(Responsável pelo</text>
+  <text x="960" y="434" text-anchor="middle" font-size="11.5" fill="#6B6F63">checkpoint)</text>
+
+  <!-- Association lines: Responsavel -->
+  <g stroke="#8A8D82" stroke-width="1.4">
+    <line x1="98" y1="310" x2="255" y2="130"/>
+    <line x1="98" y1="320" x2="255" y2="230"/>
+    <line x1="100" y1="326" x2="255" y2="330"/>
+    <line x1="98" y1="335" x2="255" y2="430"/>
+    <line x1="98" y1="345" x2="245" y2="530"/>
+  </g>
+
+  <!-- Association line: Professor -->
+  <g stroke="#8A8D82" stroke-width="1.4">
+    <line x1="942" y1="320" x2="822" y2="312"/>
+  </g>
+
+  <!-- Use case: UC01 Cadastrar corrida -->
+  <ellipse cx="380" cy="130" rx="125" ry="34" fill="#E7F1EC" stroke="#1F6F4A" stroke-width="1.6"/>
+  <text x="380" y="134" text-anchor="middle" font-size="13.5" fill="#164F35" font-weight="600">Cadastrar corrida</text>
+
+  <!-- Use case: UC02 Cadastrar checkpoint -->
+  <ellipse cx="380" cy="230" rx="125" ry="34" fill="#E7F1EC" stroke="#1F6F4A" stroke-width="1.6"/>
+  <text x="380" y="234" text-anchor="middle" font-size="13.5" fill="#164F35" font-weight="600">Cadastrar checkpoint</text>
+
+  <!-- Include relationship UC01 -> UC02 -->
+  <line x1="380" y1="164" x2="380" y2="195" stroke="#164F35" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#arrowOpen)"/>
+  <text x="470" y="200" text-anchor="middle" font-size="11.5" fill="#164F35" font-style="italic">«include»</text>
+
+  <!-- Use case: UC03 Cadastrar equipe -->
+  <ellipse cx="380" cy="330" rx="125" ry="34" fill="#E7F1EC" stroke="#1F6F4A" stroke-width="1.6"/>
+  <text x="380" y="334" text-anchor="middle" font-size="13.5" fill="#164F35" font-weight="600">Cadastrar equipe</text>
+
+  <!-- Use case: UC05 Consultar corrida -->
+  <ellipse cx="380" cy="430" rx="125" ry="34" fill="#E7F1EC" stroke="#1F6F4A" stroke-width="1.6"/>
+  <text x="380" y="434" text-anchor="middle" font-size="13.5" fill="#164F35" font-weight="600">Consultar corrida</text>
+
+  <!-- Use case: UC06 Consultar historico de equipe -->
+  <ellipse cx="370" cy="530" rx="135" ry="38" fill="#E7F1EC" stroke="#1F6F4A" stroke-width="1.6"/>
+  <text x="370" y="524" text-anchor="middle" font-size="13.5" fill="#164F35" font-weight="600">
+    <tspan x="370" dy="0">Consultar histórico</tspan>
+    <tspan x="370" dy="18">de equipe</tspan>
+  </text>
+
+  <!-- Use case: UC04 Registrar passagem -->
+  <ellipse cx="675" cy="312" rx="150" ry="46" fill="#FBEADC" stroke="#D9782D" stroke-width="1.6"/>
+  <text x="675" y="306" text-anchor="middle" font-size="13.5" fill="#9A4E12" font-weight="600">
+    <tspan x="675" dy="0">Registrar passagem de</tspan>
+    <tspan x="675" dy="18">equipe em checkpoint</tspan>
+  </text>
+
+  <defs>
+    <marker id="arrowOpen" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8" fill="none" stroke="#164F35" stroke-width="1.4"/>
+    </marker>
+  </defs>
+
+  <!-- Legend -->
+  <g font-size="11.5" fill="#6B6F63">
+    <line x1="210" y1="576" x2="240" y2="576" stroke="#8A8D82" stroke-width="1.4"/>
+    <text x="248" y="580">associação</text>
+    <line x1="330" y1="576" x2="360" y2="576" stroke="#164F35" stroke-width="1.4" stroke-dasharray="5,4"/>
+    <text x="368" y="580">«include»</text>
+  </g>
+</svg>

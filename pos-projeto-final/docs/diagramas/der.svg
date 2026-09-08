@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 720" font-family="Segoe UI, Arial, sans-serif">
+  <rect x="0" y="0" width="1080" height="720" fill="#ffffff"/>
+
+  <defs>
+    <marker id="pe" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <circle cx="3" cy="3" r="2.4" fill="#164F35"/>
+    </marker>
+  </defs>
+
+  <!-- ================= Relationship lines (drawn first, under boxes) ================= -->
+  <g stroke="#6B6F63" stroke-width="1.4" fill="none">
+    <line x1="290" y1="95"  x2="450" y2="222"/>                <!-- Corrida - Checkpoint -->
+    <line x1="915" y1="140" x2="650" y2="222"/>                <!-- Professor - Checkpoint -->
+    <line x1="170" y1="140" x2="330" y2="440"/>                <!-- Corrida - Passagem -->
+    <line x1="550" y1="352" x2="500" y2="440"/>                <!-- Checkpoint - Passagem -->
+    <line x1="800" y1="505" x2="570" y2="524"/>                <!-- Equipe - Passagem -->
+  </g>
+
+  <!-- Relationship labels + cardinalities -->
+  <g font-size="12" fill="#164F35">
+    <text x="330" y="150" text-anchor="middle" font-weight="700" font-style="italic">possui</text>
+    <text x="305" y="118" font-size="11" fill="#6B6F63">(1,N)</text>
+    <text x="420" y="212" font-size="11" fill="#6B6F63">(1,1)</text>
+
+    <text x="770" y="185" text-anchor="middle" font-weight="700" font-style="italic">é responsável por</text>
+    <text x="880" y="163" font-size="11" fill="#6B6F63">(0,N)</text>
+    <text x="655" y="212" font-size="11" fill="#6B6F63">(1,1)</text>
+
+    <text x="185" y="300" font-weight="700" font-style="italic">contém</text>
+    <text x="178" y="163" font-size="11" fill="#6B6F63">(0,N)</text>
+    <text x="335" y="430" font-size="11" fill="#6B6F63">(1,1)</text>
+
+    <text x="590" y="405" text-anchor="middle" font-weight="700" font-style="italic">gera</text>
+    <text x="558" y="378" font-size="11" fill="#6B6F63">(0,N)</text>
+    <text x="470" y="432" font-size="11" fill="#6B6F63">(1,1)</text>
+
+    <text x="700" y="500" text-anchor="middle" font-weight="700" font-style="italic">realiza</text>
+    <text x="745" y="495" font-size="11" fill="#6B6F63">(0,N)</text>
+    <text x="580" y="516" font-size="11" fill="#6B6F63">(1,1)</text>
+  </g>
+
+  <!-- ================= Entity: Corrida ================= -->
+  <g>
+    <rect x="50" y="50" width="240" height="90" fill="#ffffff" stroke="#1F6F4A" stroke-width="1.6" rx="4"/>
+    <rect x="50" y="50" width="240" height="32" fill="#1F6F4A" rx="4"/>
+    <rect x="50" y="66" width="240" height="16" fill="#1F6F4A"/>
+    <text x="170" y="71" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff">Corrida</text>
+    <text x="64" y="98"  font-size="12.5" fill="#262922" font-weight="700">id_corrida <tspan fill="#1F6F4A">(PK)</tspan></text>
+    <text x="64" y="124" font-size="12.5" fill="#262922">nome</text>
+  </g>
+
+  <!-- ================= Entity: Professor ================= -->
+  <g>
+    <rect x="800" y="50" width="230" height="90" fill="#ffffff" stroke="#1F6F4A" stroke-width="1.6" rx="4"/>
+    <rect x="800" y="50" width="230" height="32" fill="#1F6F4A" rx="4"/>
+    <rect x="800" y="66" width="230" height="16" fill="#1F6F4A"/>
+    <text x="915" y="71" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff">Professor</text>
+    <text x="814" y="98"  font-size="12.5" fill="#262922" font-weight="700">id_professor <tspan fill="#1F6F4A">(PK)</tspan></text>
+    <text x="814" y="124" font-size="12.5" fill="#262922">nome</text>
+  </g>
+
+  <!-- ================= Entity: Checkpoint ================= -->
+  <g>
+    <rect x="420" y="210" width="260" height="142" fill="#ffffff" stroke="#1F6F4A" stroke-width="1.6" rx="4"/>
+    <rect x="420" y="210" width="260" height="32" fill="#1F6F4A" rx="4"/>
+    <rect x="420" y="226" width="260" height="16" fill="#1F6F4A"/>
+    <text x="550" y="231" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff">Checkpoint</text>
+    <text x="434" y="258" font-size="12.5" fill="#262922" font-weight="700">id_checkpoint <tspan fill="#1F6F4A">(PK)</tspan></text>
+    <text x="434" y="284" font-size="12.5" fill="#262922">numero</text>
+    <text x="434" y="310" font-size="12.5" fill="#262922">id_corrida <tspan fill="#9A4E12">(FK)</tspan></text>
+    <text x="434" y="336" font-size="12.5" fill="#262922">id_professor <tspan fill="#9A4E12">(FK)</tspan></text>
+  </g>
+
+  <!-- ================= Entity: Passagem ================= -->
+  <g>
+    <rect x="270" y="440" width="300" height="168" fill="#ffffff" stroke="#D9782D" stroke-width="1.8" rx="4"/>
+    <rect x="270" y="440" width="300" height="32" fill="#D9782D" rx="4"/>
+    <rect x="270" y="456" width="300" height="16" fill="#D9782D"/>
+    <text x="420" y="461" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff">Passagem</text>
+    <text x="284" y="488" font-size="12.5" fill="#262922" font-weight="700">id_passagem <tspan fill="#D9782D">(PK)</tspan></text>
+    <text x="284" y="514" font-size="12.5" fill="#262922">momento (data/hora)</text>
+    <text x="284" y="540" font-size="12.5" fill="#262922">id_corrida <tspan fill="#9A4E12">(FK)</tspan></text>
+    <text x="284" y="566" font-size="12.5" fill="#262922">id_checkpoint <tspan fill="#9A4E12">(FK)</tspan></text>
+    <text x="284" y="592" font-size="12.5" fill="#262922">id_equipe <tspan fill="#9A4E12">(FK)</tspan></text>
+  </g>
+
+  <!-- ================= Entity: Equipe ================= -->
+  <g>
+    <rect x="800" y="460" width="230" height="90" fill="#ffffff" stroke="#1F6F4A" stroke-width="1.6" rx="4"/>
+    <rect x="800" y="460" width="230" height="32" fill="#1F6F4A" rx="4"/>
+    <rect x="800" y="476" width="230" height="16" fill="#1F6F4A"/>
+    <text x="915" y="481" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ffffff">Equipe</text>
+    <text x="814" y="508" font-size="12.5" fill="#262922" font-weight="700">id_equipe <tspan fill="#1F6F4A">(PK)</tspan></text>
+    <text x="814" y="534" font-size="12.5" fill="#262922">nome</text>
+  </g>
+
+  <!-- Legend -->
+  <g font-size="11.5" fill="#6B6F63">
+    <text x="50" y="670" font-weight="700" fill="#262922">Legenda:</text>
+    <text x="50" y="690">(PK) = identificador (chave primária)     |     (FK) = chave estrangeira     |     (min,max) = cardinalidade mínima e máxima</text>
+  </g>
+</svg>

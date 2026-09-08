@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Cadastrar corrida</title>
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="marca">
+    Sistema de Controle de Checkpoints
+    <span class="escola">Escola Caminhos da Aventura</span>
+  </div>
+  <nav>
+    <a class="ativo" href="01-corridas.html">Corridas</a>
+    <a href="03-cadastrar-equipe.html">Equipes</a>
+    <a href="04-registrar-passagem.html">Registrar Passagem</a>
+  </nav>
+</div>
+
+<div class="pagina">
+
+  <div class="trilha">Corridas &nbsp;/&nbsp; Nova corrida</div>
+
+  <div class="cabecalho-pagina">
+    <div>
+      <h1>Cadastrar corrida</h1>
+      <p class="subtitulo">Defina os dados da corrida e os checkpoints que fazem parte do percurso.</p>
+    </div>
+  </div>
+
+  <div class="cartao">
+    <h2>Dados da corrida</h2>
+    <p class="descricao">Informações gerais que identificam a competição.</p>
+    <div class="grade-form">
+      <div class="campo largo">
+        <label>Nome da corrida</label>
+        <input type="text" placeholder="Ex.: Travessia Serra Verde 2026" value="Travessia Serra Verde 2026">
+      </div>
+    </div>
+  </div>
+
+  <div class="cartao">
+    <h2>Checkpoints do percurso</h2>
+    <p class="descricao">Cada checkpoint é identificado por uma numeração (usada também no local físico da prova) e possui um professor responsável por registrar as passagens das equipes.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width:120px">Nº do checkpoint</th>
+          <th>Professor responsável</th>
+          <th style="width:90px"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="text" value="1"></td>
+          <td>
+            <select>
+              <option>Ana Beatriz Souza</option>
+              <option>Carlos Eduardo Ramos</option>
+              <option>Fernanda Lima Torres</option>
+            </select>
+          </td>
+          <td><button class="botao botao-texto">Remover</button></td>
+        </tr>
+        <tr>
+          <td><input type="text" value="2"></td>
+          <td>
+            <select>
+              <option selected>Carlos Eduardo Ramos</option>
+              <option>Ana Beatriz Souza</option>
+              <option>Fernanda Lima Torres</option>
+            </select>
+          </td>
+          <td><button class="botao botao-texto">Remover</button></td>
+        </tr>
+        <tr>
+          <td><input type="text" value="3"></td>
+          <td>
+            <select>
+              <option selected>Fernanda Lima Torres</option>
+              <option>Ana Beatriz Souza</option>
+              <option>Carlos Eduardo Ramos</option>
+            </select>
+          </td>
+          <td><button class="botao botao-texto">Remover</button></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:14px;">
+      <button class="botao botao-secundario">+ Adicionar checkpoint</button>
+    </div>
+
+    <div class="barra-acoes">
+      <button class="botao botao-secundario">Cancelar</button>
+      <button class="botao botao-primario">Salvar corrida</button>
+    </div>
+  </div>
+
+  <footer class="rodape-proto">Protótipo visual &middot; Controle de Checkpoints em Corridas de Trekking</footer>
+</div>
+
+</body>
+</html>

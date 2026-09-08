@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Consultar corrida</title>
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="marca">
+    Sistema de Controle de Checkpoints
+    <span class="escola">Escola Caminhos da Aventura</span>
+  </div>
+  <nav>
+    <a class="ativo" href="01-corridas.html">Corridas</a>
+    <a href="03-cadastrar-equipe.html">Equipes</a>
+    <a href="04-registrar-passagem.html">Registrar Passagem</a>
+  </nav>
+</div>
+
+<div class="pagina">
+
+  <div class="trilha">Corridas &nbsp;/&nbsp; Travessia Serra Verde 2026</div>
+
+  <div class="cabecalho-pagina">
+    <div>
+      <h1>Travessia Serra Verde 2026</h1>
+      <p class="subtitulo">Acompanhamento dos checkpoints e das passagens registradas pelas equipes.</p>
+    </div>
+  </div>
+
+  <div class="grid-cartoes" style="margin-bottom:22px;">
+    <div class="mini-cartao"><div class="numero">6</div><div class="rotulo">Checkpoints no percurso</div></div>
+    <div class="mini-cartao"><div class="numero">4</div><div class="rotulo">Equipes participantes</div></div>
+    <div class="mini-cartao"><div class="numero">14</div><div class="rotulo">Passagens registradas</div></div>
+  </div>
+
+  <div class="cartao">
+    <h2>Checkpoints do percurso</h2>
+    <table>
+      <thead>
+        <tr><th style="width:140px">Checkpoint</th><th>Professor responsável</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Nº 1</td><td>Ana Beatriz Souza</td></tr>
+        <tr><td>Nº 2</td><td>Carlos Eduardo Ramos</td></tr>
+        <tr><td>Nº 3</td><td>Fernanda Lima Torres</td></tr>
+        <tr><td>Nº 4</td><td>Ana Beatriz Souza</td></tr>
+        <tr><td>Nº 5</td><td>Carlos Eduardo Ramos</td></tr>
+        <tr><td>Nº 6</td><td>Fernanda Lima Torres</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cartao">
+    <h2>Progressão das equipes pelo percurso</h2>
+    <p class="descricao">Checkpoints já alcançados por cada equipe (acompanhamento em tempo real, enquanto a prova está em andamento).</p>
+    <table class="matriz-progresso">
+      <thead>
+        <tr>
+          <th style="text-align:left;">Equipe</th>
+          <th>CP1</th><th>CP2</th><th>CP3</th><th>CP4</th><th>CP5</th><th>CP6</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="nome-equipe">Equipe Raízes da Serra</td>
+          <td><span class="marca-ok">✓</span></td><td><span class="marca-ok">✓</span></td><td><span class="marca-ok">✓</span></td><td><span class="marca-ok">✓</span></td><td><span class="marca-ok">✓</span></td><td><span class="marca-vazia"></span></td>
+        </tr>
+        <tr>
+          <td class="nome-equipe">Equipe Trovão Verde</td>
+          <td><span class="marca-ok">✓</span></td><td><span class="marca-ok">✓</span></td><td><span class="marca-ok">✓</span></td><td><span class="marca-ok">✓</span></td><td><span class="marca-vazia"></span></td><td><span class="marca-vazia"></span></td>
+        </tr>
+        <tr>
+          <td class="nome-equipe">Equipe Águias da Trilha</td>
+          <td><span class="marca-ok">✓</span></td><td><span class="marca-ok">✓</span></td><td><span class="marca-ok">✓</span></td><td><span class="marca-vazia"></span></td><td><span class="marca-vazia"></span></td><td><span class="marca-vazia"></span></td>
+        </tr>
+        <tr>
+          <td class="nome-equipe">Equipe Vento Sul</td>
+          <td><span class="marca-ok">✓</span></td><td><span class="marca-ok">✓</span></td><td><span class="marca-vazia"></span></td><td><span class="marca-vazia"></span></td><td><span class="marca-vazia"></span></td><td><span class="marca-vazia"></span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cartao">
+    <h2>Passagens registradas</h2>
+    <table>
+      <thead>
+        <tr><th>Equipe</th><th>Checkpoint</th><th style="width:120px">Horário</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Equipe Águias da Trilha</td><td>Nº 3</td><td>09:42</td></tr>
+        <tr><td>Equipe Trovão Verde</td><td>Nº 4</td><td>10:12</td></tr>
+        <tr><td>Equipe Raízes da Serra</td><td>Nº 5</td><td>10:33</td></tr>
+        <tr><td>Equipe Raízes da Serra</td><td>Nº 4</td><td>09:58</td></tr>
+        <tr><td>Equipe Trovão Verde</td><td>Nº 3</td><td>09:37</td></tr>
+        <tr><td>Equipe Raízes da Serra</td><td>Nº 3</td><td>09:21</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer class="rodape-proto">Protótipo visual &middot; Controle de Checkpoints em Corridas de Trekking</footer>
+</div>
+
+</body>
+</html>
