@@ -1,0 +1,33 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #222;
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 0 16px;
+}
+
+h1 {
+    text-align: center;
+}
+
+.simulacao {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+}
+
+.simulacao h3 {
+    margin: 0 0 8px;
+}
+
+.simulacao p {
+    margin: 4px 0;
+}
+
+.resultado {
+    font-weight: bold;
+    color: #1a7f37;
+}
