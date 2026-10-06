@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent
 DATABASE = BASE_DIR / "banco.db"
 SCHEMA = BASE_DIR / "schema.sql"
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="frontend", static_url_path="")
 
 
 def get_db():
@@ -33,6 +33,13 @@ def init_db():
 
 def row_to_dict(row):
     return dict(row) if row else None
+
+
+# ------------------------------------------------------------------ Interface
+
+@app.route("/")
+def index():
+    return app.send_static_file("index.html")
 
 
 # ---------------------------------------------------------------- Professores
@@ -102,7 +109,16 @@ def criar_corrida():
 @app.route("/corridas", methods=["GET"])
 def listar_corridas():
     db = get_db()
-    linhas = db.execute("SELECT * FROM corrida").fetchall()
+    linhas = db.execute(
+        """
+        SELECT id_corrida, nome,
+               (SELECT COUNT(*) FROM checkpoint
+                WHERE checkpoint.id_corrida = corrida.id_corrida) AS total_checkpoints,
+               (SELECT COUNT(*) FROM passagem
+                WHERE passagem.id_corrida = corrida.id_corrida) AS total_passagens
+        FROM corrida
+        """
+    ).fetchall()
     return jsonify([row_to_dict(linha) for linha in linhas])
 
 
@@ -146,8 +162,11 @@ def atualizar_corrida(id_corrida):
 @app.route("/corridas/<int:id_corrida>", methods=["DELETE"])
 def remover_corrida(id_corrida):
     db = get_db()
-    db.execute("DELETE FROM corrida WHERE id_corrida = ?", (id_corrida,))
-    db.commit()
+    try:
+        db.execute("DELETE FROM corrida WHERE id_corrida = ?", (id_corrida,))
+        db.commit()
+    except sqlite3.IntegrityError:
+        return jsonify({"erro": "Não é possível excluir uma corrida que possui checkpoints ou passagens registradas."}), 409
     return "", 204
 
 
@@ -334,6 +353,5 @@ def remover_passagem(id_passagem):
 
 
 if __name__ == "__main__":
-    if not DATABASE.exists():
-        init_db()
+    init_db()
     app.run(debug=True)
