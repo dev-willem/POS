@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professores</title>
+    <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+
+    <div class="topbar">
+        <div class="marca">
+            Sistema de Controle de Checkpoints
+            <span class="escola">Escola Caminhos da Aventura</span>
+        </div>
+        <nav>
+            <a href="index.html">Início</a>
+            <a href="corridas.html">Corridas</a>
+            <a class="ativo" href="professores.html">Professores</a>
+            <a href="checkpoints.html">Checkpoints</a>
+        </nav>
+    </div>
+
+    <div class="pagina">
+        <div class="cabecalho-pagina">
+            <div>
+                <h1>Professores cadastrados</h1>
+                <p class="subtitulo">Cadastre, altere ou exclua os professores responsáveis pelos checkpoints.</p>
+            </div>
+            <button id="nova-professor" class="botao botao-primario" type="button">+ Novo professor</button>
+        </div>
+
+        <p id="status" hidden></p>
+
+        <section id="lista-professores"></section>
+    </div>
+
+    <dialog id="modal-professor">
+        <form id="form-professor">
+            <h2 id="titulo-formulario">Novo professor</h2>
+            <input type="hidden" id="professor-id">
+            <div class="campo">
+                <label for="professor-nome">Nome do professor</label>
+                <input type="text" id="professor-nome" required>
+            </div>
+            <div class="barra-acoes">
+                <button type="button" id="cancelar-professor" class="botao botao-secundario">Cancelar</button>
+                <button type="submit" class="botao botao-primario">Salvar</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script type="module" src="js/professores.js"></script>
+</body>
+</html>

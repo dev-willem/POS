@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corridas</title>
+    <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+
+    <div class="topbar">
+        <div class="marca">
+            Sistema de Controle de Checkpoints
+            <span class="escola">Escola Caminhos da Aventura</span>
+        </div>
+        <nav>
+            <a href="index.html">Início</a>
+            <a class="ativo" href="corridas.html">Corridas</a>
+            <a href="professores.html">Professores</a>
+            <a href="checkpoints.html">Checkpoints</a>
+        </nav>
+    </div>
+
+    <div class="pagina">
+        <div class="cabecalho-pagina">
+            <div>
+                <h1>Corridas cadastradas</h1>
+                <p class="subtitulo">Cadastre, altere ou exclua as corridas do sistema.</p>
+            </div>
+            <button id="nova-corrida" class="botao botao-primario" type="button">+ Nova corrida</button>
+        </div>
+
+        <p id="status" hidden></p>
+
+        <section id="lista-corridas"></section>
+    </div>
+
+    <dialog id="modal-corrida">
+        <form id="form-corrida">
+            <h2 id="titulo-formulario">Nova corrida</h2>
+            <input type="hidden" id="corrida-id">
+            <div class="campo">
+                <label for="corrida-nome">Nome da corrida</label>
+                <input type="text" id="corrida-nome" required>
+            </div>
+            <div class="barra-acoes">
+                <button type="button" id="cancelar-corrida" class="botao botao-secundario">Cancelar</button>
+                <button type="submit" class="botao botao-primario">Salvar</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script type="module" src="js/corridas.js"></script>
+</body>
+</html>
