@@ -1,23 +1,20 @@
 import { Corrida } from "../classes/Corrida.js";
-import { CorridaEmAndamento } from "../classes/CorridaEmAndamento.js";
-import { listarCorridas } from "../servicos/api.js";
 
-export const corridas = [];
+const chave = "corridas";
 
-export function criarObjetoCorrida(dados) {
-    const totalCheckpoints = dados.total_checkpoints ?? 0;
-    const totalPassagens = dados.total_passagens ?? 0;
-
-    if (totalPassagens > 0) {
-        return new CorridaEmAndamento(dados.id_corrida, dados.nome, totalCheckpoints, totalPassagens);
+function carregarCorridas() {
+    const texto = localStorage.getItem(chave);
+    if (!texto) {
+        return [];
     }
-    return new Corrida(dados.id_corrida, dados.nome, totalCheckpoints, totalPassagens);
+    const lista = JSON.parse(texto);
+    return lista.map((dados) => new Corrida(dados.nome, dados.id));
 }
 
-export async function carregarCorridas() {
-    const lista = await listarCorridas();
-    corridas.length = 0;
-    for (const dados of lista) {
-        corridas.push(criarObjetoCorrida(dados));
-    }
+export const corridas = carregarCorridas();
+
+export function salvarCorridas() {
+    // Campos privados nao entram no JSON
+    const lista = corridas.map((c) => ({ id: c.id, nome: c.nome }));
+    localStorage.setItem(chave, JSON.stringify(lista));
 }

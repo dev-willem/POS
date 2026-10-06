@@ -1,5 +1,6 @@
-import { corridas, criarObjetoCorrida, carregarCorridas } from "../dados/corridas.js";
-import { cadastrarCorrida, atualizarCorrida, removerCorrida } from "../servicos/api.js";
+import { corridas, salvarCorridas } from "../dados/corridas.js";
+import { checkpoints } from "../dados/checkpoints.js";
+import { Corrida } from "../classes/Corrida.js";
 
 const lista = document.querySelector("#lista-corridas");
 const status = document.querySelector("#status");
@@ -32,23 +33,20 @@ function criarCorridas() {
     }
 
     for (const corrida of corridas) {
-        const item = corrida.render();
+        const total = checkpoints.filter((c) => c.corrida.id === corrida.id).length;
+        const item = corrida.render(total);
 
         const botaoAlterar = item.querySelector('[data-acao="alterar"]');
         const botaoExcluir = item.querySelector('[data-acao="excluir"]');
 
-        if (botaoAlterar) {
-            botaoAlterar.addEventListener("click", () => abrirFormularioAlteracao(corrida));
-        }
-        if (botaoExcluir) {
-            botaoExcluir.addEventListener("click", () => excluirCorrida(corrida.id));
-        }
+        botaoAlterar.addEventListener("click", () => abrirFormularioAlteracao(corrida));
+        botaoExcluir.addEventListener("click", () => excluirCorrida(corrida.id));
 
         lista.appendChild(item);
     }
 }
 
-function abrirFormularioCriacao() {
+function abrirFormularioNovaCorrida() {
     titulo.textContent = "Nova corrida";
     campoId.value = "";
     campoNome.value = "";
@@ -62,69 +60,56 @@ function abrirFormularioAlteracao(corrida) {
     modal.showModal();
 }
 
-async function criarCorrida(nome) {
-    try {
-        const resposta = await cadastrarCorrida(nome);
-        corridas.push(criarObjetoCorrida(resposta));
-        criarCorridas();
-        limparStatus();
-    } catch (erro) {
-        mostrarStatus(erro.message);
-    }
+function criarCorrida(nome) {
+    corridas.push(new Corrida(nome));
+    salvarCorridas();
+    criarCorridas();
+    limparStatus();
 }
 
-async function alterarCorrida(id, nome) {
-    try {
-        const resposta = await atualizarCorrida(id, nome);
-        const corrida = corridas.find((c) => c.id === Number(id));
-        corrida.nome = resposta.nome;
-
-        // Atualiza apenas o texto do nome no cartao, sem redesenhar a lista
-        const nomeNoCartao = lista.querySelector(`.corrida[data-id="${id}"] .nome`);
-        nomeNoCartao.textContent = corrida.nome;
-        limparStatus();
-    } catch (erro) {
-        mostrarStatus(erro.message);
-    }
+function alterarCorrida(id, nome) {
+    const corrida = corridas.find((c) => c.id === Number(id));
+    corrida.nome = nome;
+    salvarCorridas();
+    criarCorridas();
+    limparStatus();
 }
 
-async function excluirCorrida(id) {
+function excluirCorrida(id) {
+    // Corrida com checkpoints nao pode ser excluida
+    if (checkpoints.some((c) => c.corrida.id == id)) {
+        mostrarStatus("Não é possível excluir esta corrida porque existem checkpoints associados a ela.");
+        return;
+    }
+
     if (!confirm("Deseja realmente excluir esta corrida?")) {
         return;
     }
 
-    try {
-        await removerCorrida(id);
-        const indice = corridas.findIndex((c) => c.id === id);
-        corridas.splice(indice, 1);
-        criarCorridas();
-        limparStatus();
-    } catch (erro) {
-        mostrarStatus(erro.message);
-    }
+    const indice = corridas.findIndex((c) => c.id === id);
+    corridas.splice(indice, 1);
+    salvarCorridas();
+    criarCorridas();
+    limparStatus();
 }
 
-botaoNova.addEventListener("click", abrirFormularioCriacao);
+export function inicializar() {
+    botaoNova.addEventListener("click", abrirFormularioNovaCorrida);
 
-botaoCancelar.addEventListener("click", () => modal.close());
+    botaoCancelar.addEventListener("click", () => modal.close());
 
-formulario.addEventListener("submit", async (evento) => {
-    evento.preventDefault();
-    const nome = campoNome.value.trim();
+    formulario.addEventListener("submit", (evento) => {
+        evento.preventDefault();
+        const nome = campoNome.value.trim();
 
-    if (campoId.value) {
-        await alterarCorrida(campoId.value, nome);
-    } else {
-        await criarCorrida(nome);
-    }
-    modal.close();
-});
+        if (campoId.value) {
+            alterarCorrida(campoId.value, nome);
+        } else {
+            criarCorrida(nome);
+        }
+        formulario.reset();
+        modal.close();
+    });
 
-export async function iniciarCorridas() {
-    try {
-        await carregarCorridas();
-        criarCorridas();
-    } catch (erro) {
-        mostrarStatus("Não foi possível carregar as corridas. Verifique se a API está em execução.");
-    }
+    criarCorridas();
 }

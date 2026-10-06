@@ -1,4 +1,4 @@
-export class Corrida {
+export class Professor {
     static proximoId = 1;
 
     #id;
@@ -6,10 +6,10 @@ export class Corrida {
 
     constructor(nome, id = null) {
         if (id === null) {
-            this.#id = Corrida.proximoId++;
+            this.#id = Professor.proximoId++;
         } else {
             this.#id = id;
-            Corrida.proximoId = Math.max(Corrida.proximoId, id + 1);
+            Professor.proximoId = Math.max(Professor.proximoId, id + 1);
         }
         this.#nome = nome;
     }
@@ -27,9 +27,9 @@ export class Corrida {
     }
 
     render(totalCheckpoints = 0) {
-        const corrida = document.createElement("div");
-        corrida.classList.add("corrida");
-        corrida.dataset.id = this.#id;
+        const professor = document.createElement("div");
+        professor.classList.add("professor");
+        professor.dataset.id = this.#id;
 
         const titulo = document.createElement("h3");
         const nome = document.createElement("span");
@@ -38,7 +38,7 @@ export class Corrida {
         titulo.appendChild(nome);
 
         const checkpoints = document.createElement("p");
-        checkpoints.textContent = `Checkpoints no percurso: ${totalCheckpoints}`;
+        checkpoints.textContent = `Checkpoints sob responsabilidade: ${totalCheckpoints}`;
 
         const acoes = document.createElement("div");
         acoes.classList.add("acoes");
@@ -56,8 +56,8 @@ export class Corrida {
         botaoExcluir.textContent = "Excluir";
 
         acoes.append(botaoAlterar, botaoExcluir);
-        corrida.append(titulo, checkpoints, acoes);
+        professor.append(titulo, checkpoints, acoes);
 
-        return corrida;
+        return professor;
     }
 }

@@ -31,7 +31,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-A API e a interface web sobem em `http://127.0.0.1:5000` (abra esse endereço no navegador). A interface é servida pelo próprio Flask, o que é necessário porque módulos ES não carregam via `file://`.
+A API e a interface sobem em `http://127.0.0.1:5000`. Na v3 a interface não consome a API (usa `localStorage`); o Flask só serve os arquivos estáticos, já que módulos ES não carregam via `file://`.
 
 ### Endpoints
 
@@ -65,29 +65,57 @@ curl http://127.0.0.1:5000/equipes/1/historico
 
 ## Interface web
 
-Interface em HTML, CSS e JavaScript (módulos ES) para o recurso **Corridas** (listar, criar, alterar e excluir), consumindo a API.
+CRUD de **Corrida**, **Professor** e **Checkpoint** em HTML, CSS e JavaScript (módulos ES), com dados no `localStorage`. Para executar: `python app.py` e abrir `http://127.0.0.1:5000/`.
 
 ```
 frontend/
-├── index.html                      estrutura da página
-├── css/estilo.css                  aparência
+├── index.html / corridas.html / professores.html / checkpoints.html
+├── css/estilo.css
 └── js/
-    ├── classes/
-    │   ├── Corrida.js              classe do recurso
-    │   └── CorridaEmAndamento.js   especialização (herança)
-    ├── servicos/api.js             comunicação com a API (fetch)
-    ├── dados/corridas.js           coleção de objetos carregada da API
-    ├── interface/corridas.js       apresentação e eventos
-    └── script.js                   ponto de entrada
+    ├── corridas.js, professores.js, checkpoints.js   pontos de entrada das páginas
+    ├── classes/     Corrida.js, Professor.js, Checkpoint.js
+    ├── dados/       corridas.js, professores.js, checkpoints.js   (localStorage)
+    └── interface/   corridas.js, professores.js, checkpoints.js   (listas, formulários, eventos)
 ```
+
+```mermaid
+classDiagram
+    class Corrida { id; nome }
+    class Professor { id; nome }
+    class Checkpoint { id; numero; corrida; professor }
+    Checkpoint "0..*" --> "1" Corrida
+    Checkpoint "0..*" --> "1" Professor
+```
+
+### Persistência
+
+Chaves: `corridas`, `professores` e `checkpoints`. Em memória o `Checkpoint` referencia objetos `Corrida` e `Professor`; no `localStorage` guarda só os ids:
+
+```json
+[{"id":1,"numero":1,"corridaId":1,"professorId":2}]
+```
+
+Na carga, corridas e professores são lidos primeiro; depois os checkpoints, que recuperam suas referências pelos ids. Os ids são preservados e `proximoId` é ajustado com `Math.max`.
+
+### Regras de integridade
+
+- Corrida ou professor com checkpoints não pode ser excluído (é exibida uma mensagem).
+- O número de um checkpoint não pode se repetir dentro da mesma corrida.
+
+### Como testar
+
+1. Cadastre algumas corridas e professores.
+2. Cadastre um checkpoint selecionando a corrida e o professor.
+3. Recarregue a página e verifique que os dados e as relações continuam exibidos.
+4. Altere e exclua registros.
+5. Tente excluir uma corrida ou um professor que tenha checkpoints e veja a mensagem de bloqueio.
 
 ### Onde cada capítulo foi aplicado
 
 | Capítulo | Conceito | Onde está |
 | --- | --- | --- |
-| Cap. 1 — JavaScript na página web | Criação de elementos com `createElement`/`textContent` e inserção no DOM | `render()` das classes e `criarCorridas()` em `interface/corridas.js` |
-| Cap. 2 — Objetos e classes | Classe `Corrida` com atributos privados (`#id`, `#nome`, `#totalCheckpoints`, `#totalPassagens`), getters/setter e `render()`; herança em `CorridaEmAndamento` (corrida com passagens registradas: exibe selo "Em andamento" e não oferece "Excluir") | `classes/` |
-| Cap. 3 — Eventos e interação | Botão "+ Nova corrida", formulário em `<dialog>`, botões com `data-acao`, `dataset.id`, criar/alterar/excluir sincronizando objeto e interface | `interface/corridas.js` + `index.html` |
-| Cap. 4 — Módulos | `import`/`export`, `<script type="module">`, separação classes/dados/interface/inicialização e um módulo próprio para a API | toda a pasta `js/` |
-
-Diferente dos exercícios originais, os dados agora vêm da API (`GET/POST/PUT/DELETE /corridas`) e persistem no SQLite.
+| Cap. 1 — JavaScript na página web | Criação de elementos com `createElement`/`textContent` e inserção no DOM | `render()` das classes |
+| Cap. 2 — Objetos e classes | Classes com atributos privados, getters/setters e `render()`; exemplo de herança (`CorridaEmAndamento`) na branch `frontend-v2` | `classes/` |
+| Cap. 3 — Eventos e interação | Eventos, formulários em `<dialog>`, botões com `data-acao`, `dataset` | `interface/` + páginas `.html` |
+| Cap. 4 — Módulos | `import`/`export`, separação classes/dados/interface e pontos de entrada por página | toda a pasta `js/` |
+| Cap. 5 — Recursos relacionados e localStorage | Recursos relacionados, referências entre objetos, `localStorage`, reconstrução de objetos e relações, integridade | `classes/Checkpoint.js`, `dados/`, `interface/checkpoints.js` |
