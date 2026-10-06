@@ -1,0 +1,218 @@
+/* Sistema de Controle de Checkpoints - baseado no prototipo */
+
+:root {
+    --cor-primaria: #1F6F4A;
+    --cor-primaria-escura: #164F35;
+    --cor-primaria-clara: #E7F1EC;
+    --cor-acento: #D9782D;
+    --cor-acento-clara: #FBEADC;
+    --cor-fundo: #F5F3EE;
+    --cor-superficie: #FFFFFF;
+    --cor-borda: #E1DDD3;
+    --cor-texto: #262922;
+    --cor-texto-suave: #6B6F63;
+    --cor-erro: #9B1C1C;
+    --cor-erro-clara: #FDECEC;
+    --sombra: 0 1px 2px rgba(30, 30, 20, 0.06), 0 4px 12px rgba(30, 30, 20, 0.06);
+    --raio: 10px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--cor-fundo);
+    color: var(--cor-texto);
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    line-height: 1.45;
+}
+
+a { color: inherit; text-decoration: none; }
+
+.topbar {
+    background: var(--cor-primaria-escura);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    height: 64px;
+}
+
+.topbar .marca {
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.2px;
+}
+
+.topbar .marca .escola {
+    display: block;
+    font-weight: 400;
+    font-size: 12px;
+    color: #CFE3D8;
+}
+
+.topbar nav { display: flex; gap: 6px; }
+
+.topbar nav a {
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #DCEEE4;
+}
+
+.topbar nav a.ativo {
+    background: var(--cor-primaria);
+    color: #fff;
+}
+
+.pagina {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 28px 28px 60px;
+}
+
+.cabecalho-pagina {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.cabecalho-pagina h1 { margin: 0 0 4px; font-size: 24px; }
+
+.cabecalho-pagina .subtitulo {
+    margin: 0;
+    color: var(--cor-texto-suave);
+    font-size: 14px;
+}
+
+.botao {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.botao-primario { background: var(--cor-primaria); color: #fff; }
+
+.botao-secundario {
+    background: #fff;
+    color: var(--cor-texto);
+    border: 1px solid var(--cor-borda);
+}
+
+.botao-perigo {
+    background: #fff;
+    color: var(--cor-erro);
+    border: 1px solid var(--cor-erro);
+}
+
+/* Mensagens de erro e feedback */
+#status {
+    margin: 0 0 18px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--cor-erro);
+    background: var(--cor-erro-clara);
+    color: var(--cor-erro);
+    font-size: 13.5px;
+    font-weight: 600;
+}
+
+#status[hidden] { display: none; }
+
+/* Cartoes de corrida */
+#lista-corridas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 14px;
+}
+
+#lista-corridas > p { grid-column: 1 / -1; color: var(--cor-texto-suave); }
+
+.corrida {
+    background: var(--cor-superficie);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio);
+    box-shadow: var(--sombra);
+    padding: 18px 20px;
+}
+
+.corrida h3 {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 10px;
+    font-size: 17px;
+}
+
+.corrida p {
+    margin: 0 0 4px;
+    font-size: 13.5px;
+    color: var(--cor-texto-suave);
+}
+
+.corrida .acoes {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.corrida-em-andamento { border-left: 4px solid var(--cor-acento); }
+
+.selo {
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--cor-acento-clara);
+    color: #9A4E12;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* Formulario em dialog */
+dialog {
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio);
+    box-shadow: var(--sombra);
+    padding: 24px;
+    width: min(420px, 92vw);
+    color: var(--cor-texto);
+}
+
+dialog::backdrop { background: rgba(20, 30, 20, 0.5); }
+
+dialog h2 { margin: 0 0 16px; font-size: 18px; }
+
+.campo { display: flex; flex-direction: column; gap: 6px; }
+
+.campo label { font-size: 13px; font-weight: 600; }
+
+.campo input {
+    padding: 10px 12px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.barra-acoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--cor-borda);
+}
