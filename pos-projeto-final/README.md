@@ -80,7 +80,7 @@ frontend/
 
 ```mermaid
 classDiagram
-    class Corrida { id; nome }
+    class Corrida { id; nome; status }
     class Professor { id; nome }
     class Checkpoint { id; numero; corrida; professor }
     Checkpoint "0..*" --> "1" Corrida
@@ -97,18 +97,48 @@ Chaves: `corridas`, `professores` e `checkpoints`. Em memória o `Checkpoint` re
 
 Na carga, corridas e professores são lidos primeiro; depois os checkpoints, que recuperam suas referências pelos ids. Os ids são preservados e `proximoId` é ajustado com `Math.max`.
 
+A corrida também guarda o `status`; corridas salvas antes dessa versão (sem o campo) voltam como `Criada`:
+
+```json
+[{"id":1,"nome":"Trilha da Serra","status":"Iniciada"}]
+```
+
+### Ciclo de vida da corrida
+
+Cada corrida tem um `status`: `Criada`, `Iniciada` ou `Encerrada`.
+
+```mermaid
+stateDiagram-v2
+    [*] --> Criada
+    Criada --> Iniciada: iniciar()
+    Iniciada --> Encerrada: encerrar()
+    Encerrada --> [*]
+```
+
+- A classe `Corrida` concentra a regra: `iniciar()` só funciona em corridas `Criada` e `encerrar()` só em corridas `Iniciada`; qualquer outra transição lança um erro e não altera o status. O getter `aceitaCheckpoints` informa se a corrida está `Iniciada`.
+- A listagem de corridas mostra o status e oferece só a ação compatível: **Iniciar** (corrida `Criada`) ou **Encerrar** (corrida `Iniciada`, com confirmação). Corrida `Encerrada` não tem nenhuma das duas.
+- O registro de checkpoints só é aceito em corridas `Iniciada`. A verificação está em `criarCheckpoint` e em `alterarCheckpoint` (mover um checkpoint para outra corrida equivale a registrá-lo nela), em `interface/checkpoints.js`, e não só no formulário: mesmo que a opção de uma corrida `Criada` ou `Encerrada` seja forçada no formulário, a operação é recusada com mensagem.
+- Encerrar uma corrida não apaga nada: os checkpoints já registrados permanecem.
+- O status é salvo no `localStorage` a cada transição e mantido após recarregar a página.
+
 ### Regras de integridade
 
 - Corrida ou professor com checkpoints não pode ser excluído (é exibida uma mensagem).
 - O número de um checkpoint não pode se repetir dentro da mesma corrida.
+- Novos checkpoints só podem ser registrados em corridas `Iniciada`.
+- O status só avança na sequência `Criada → Iniciada → Encerrada`.
 
 ### Como testar
 
-1. Cadastre algumas corridas e professores.
-2. Cadastre um checkpoint selecionando a corrida e o professor.
-3. Recarregue a página e verifique que os dados e as relações continuam exibidos.
-4. Altere e exclua registros.
-5. Tente excluir uma corrida ou um professor que tenha checkpoints e veja a mensagem de bloqueio.
+1. Cadastre algumas corridas e professores. As corridas nascem como `Criada`.
+2. Em Checkpoints, clique em "Novo checkpoint": é exibida a mensagem de que não há corrida iniciada.
+3. Em Corridas, clique em **Iniciar** em uma corrida; o status muda para `Iniciada` e o botão passa a ser **Encerrar**.
+4. Cadastre um checkpoint selecionando a corrida iniciada e o professor.
+5. Recarregue a página e verifique que os dados, as relações e o status continuam exibidos.
+6. Clique em **Encerrar** (e confirme): o status vira `Encerrada`, os botões Iniciar/Encerrar somem e os checkpoints já registrados continuam na página Checkpoints.
+7. Tente registrar outro checkpoint: a corrida encerrada não aparece na lista e, se for forçada, a operação é recusada.
+8. Altere e exclua registros.
+9. Tente excluir uma corrida ou um professor que tenha checkpoints e veja a mensagem de bloqueio.
 
 ### Onde cada capítulo foi aplicado
 

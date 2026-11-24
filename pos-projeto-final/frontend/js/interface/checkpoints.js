@@ -77,11 +77,17 @@ function abrirFormularioNovoCheckpoint() {
         return;
     }
 
+    const iniciadas = corridas.filter((c) => c.aceitaCheckpoints);
+    if (iniciadas.length === 0) {
+        mostrarStatus("Nenhuma corrida iniciada. Inicie uma corrida (página Corridas) para registrar checkpoints.");
+        return;
+    }
+
     limparStatus();
     titulo.textContent = "Novo checkpoint";
     campoId.value = "";
     campoNumero.value = "";
-    preencherSelect(campoCorrida, "Selecione a corrida", corridas);
+    preencherSelect(campoCorrida, "Selecione a corrida", iniciadas);
     preencherSelect(campoProfessor, "Selecione o professor", professores);
     modal.showModal();
 }
@@ -91,7 +97,9 @@ function abrirFormularioAlteracao(checkpoint) {
     titulo.textContent = "Alterar checkpoint";
     campoId.value = checkpoint.id;
     campoNumero.value = checkpoint.numero;
-    preencherSelect(campoCorrida, "Selecione a corrida", corridas);
+    // Alem das iniciadas, mantem a corrida atual do checkpoint, mesmo encerrada
+    const disponiveis = corridas.filter((c) => c.aceitaCheckpoints || c.id === checkpoint.corrida.id);
+    preencherSelect(campoCorrida, "Selecione a corrida", disponiveis);
     preencherSelect(campoProfessor, "Selecione o professor", professores);
     campoCorrida.value = checkpoint.corrida.id;
     campoProfessor.value = checkpoint.professor.id;
@@ -105,7 +113,20 @@ function numeroJaExiste(numero, corrida, idIgnorado) {
     );
 }
 
+// Regra de negocio: so corridas iniciadas recebem novos registros de checkpoint
+function corridaNaoAceitaCheckpoints(corrida) {
+    if (corrida.aceitaCheckpoints) {
+        return false;
+    }
+    mostrarStatus(`A corrida "${corrida.nome}" está ${corrida.status}. Só é possível registrar checkpoints em corridas Iniciadas.`);
+    return true;
+}
+
 function criarCheckpoint(numero, corrida, professor) {
+    if (corridaNaoAceitaCheckpoints(corrida)) {
+        return false;
+    }
+
     if (numeroJaExiste(numero, corrida, null)) {
         mostrarStatus(`Já existe o checkpoint ${numero} na corrida "${corrida.nome}".`);
         return false;
@@ -120,6 +141,11 @@ function criarCheckpoint(numero, corrida, professor) {
 
 function alterarCheckpoint(id, numero, corrida, professor) {
     const checkpoint = checkpoints.find((c) => c.id === Number(id));
+
+    // Mover o checkpoint para outra corrida equivale a registra-lo nela
+    if (corrida.id !== checkpoint.corrida.id && corridaNaoAceitaCheckpoints(corrida)) {
+        return false;
+    }
 
     if (numeroJaExiste(numero, corrida, checkpoint.id)) {
         mostrarStatus(`Já existe o checkpoint ${numero} na corrida "${corrida.nome}".`);

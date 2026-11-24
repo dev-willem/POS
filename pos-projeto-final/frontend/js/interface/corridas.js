@@ -36,14 +36,42 @@ function criarCorridas() {
         const total = checkpoints.filter((c) => c.corrida.id === corrida.id).length;
         const item = corrida.render(total);
 
+        const botaoIniciar = item.querySelector('[data-acao="iniciar"]');
+        const botaoEncerrar = item.querySelector('[data-acao="encerrar"]');
         const botaoAlterar = item.querySelector('[data-acao="alterar"]');
         const botaoExcluir = item.querySelector('[data-acao="excluir"]');
 
+        botaoIniciar?.addEventListener("click", () => iniciarCorrida(corrida));
+        botaoEncerrar?.addEventListener("click", () => encerrarCorrida(corrida));
         botaoAlterar.addEventListener("click", () => abrirFormularioAlteracao(corrida));
         botaoExcluir.addEventListener("click", () => excluirCorrida(corrida.id));
 
         lista.appendChild(item);
     }
+}
+
+// A regra das transicoes fica na classe Corrida, que lanca erro se a transicao for invalida
+function mudarStatus(transicao) {
+    try {
+        transicao();
+    } catch (erro) {
+        mostrarStatus(erro.message);
+        return;
+    }
+    salvarCorridas();
+    criarCorridas();
+    limparStatus();
+}
+
+function iniciarCorrida(corrida) {
+    mudarStatus(() => corrida.iniciar());
+}
+
+function encerrarCorrida(corrida) {
+    if (!confirm(`Deseja realmente encerrar a corrida "${corrida.nome}"? Depois de encerrada ela não aceita novos checkpoints.`)) {
+        return;
+    }
+    mudarStatus(() => corrida.encerrar());
 }
 
 function abrirFormularioNovaCorrida() {

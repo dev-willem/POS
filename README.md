@@ -13,6 +13,7 @@ Aplicados na interface web do projeto, em [`pos-projeto-final/frontend/`](pos-pr
 | `frontend-v1` | Exercícios dos capítulos 1 a 3 (páginas avulsas com o recurso Corridas) |
 | `frontend-v2` | Refatoração em módulos (Cap. 4), front de Corridas consumindo a API Flask |
 | `frontend-v3` | Recursos relacionados (Corrida, Professor, Checkpoint) com persistência em localStorage (Cap. 5) |
+| `prova-pratica` | Prova prática: status da corrida (Criada, Iniciada, Encerrada) e registro de checkpoints somente em corridas iniciadas |
 
 ## Projeto final — Programação Orientada a Serviços
 
