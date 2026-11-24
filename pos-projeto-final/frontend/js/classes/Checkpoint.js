@@ -1,18 +1,12 @@
 export class Checkpoint {
-    static proximoId = 1;
-
     #id;
     #numero;
     #corrida;
     #professor;
 
+    // O id e gerado pela API; fica null enquanto o checkpoint ainda nao foi salvo
     constructor(numero, corrida, professor, id = null) {
-        if (id === null) {
-            this.#id = Checkpoint.proximoId++;
-        } else {
-            this.#id = id;
-            Checkpoint.proximoId = Math.max(Checkpoint.proximoId, id + 1);
-        }
+        this.#id = id;
         this.#numero = numero;
         this.#corrida = corrida;
         this.#professor = professor;

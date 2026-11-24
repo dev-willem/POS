@@ -1,0 +1,14 @@
+{
+  "name": "pos-projeto-final",
+  "private": true,
+  "description": "API REST (JSON Server) do sistema de controle de checkpoints",
+  "scripts": {
+    "api": "json-server db.json"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "devDependencies": {
+    "json-server": "1.0.0-beta.15"
+  }
+}

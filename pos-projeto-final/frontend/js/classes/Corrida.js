@@ -5,22 +5,16 @@ export class Corrida {
         ENCERRADA: "Encerrada"
     });
 
-    static proximoId = 1;
-
     #id;
     #nome;
     #status;
 
+    // O id e gerado pela API; fica null enquanto a corrida ainda nao foi salva
     constructor(nome, id = null, status = Corrida.STATUS.CRIADA) {
         if (!Object.values(Corrida.STATUS).includes(status)) {
             throw new Error(`Status de corrida inválido: "${status}".`);
         }
-        if (id === null) {
-            this.#id = Corrida.proximoId++;
-        } else {
-            this.#id = id;
-            Corrida.proximoId = Math.max(Corrida.proximoId, id + 1);
-        }
+        this.#id = id;
         this.#nome = nome;
         this.#status = status;
     }

@@ -1,10 +1,12 @@
-import { corridas, salvarCorridas } from "../dados/corridas.js";
-import { checkpoints } from "../dados/checkpoints.js";
+import { carregarDados } from "../api/dados.js";
+import { atualizarCorrida, buscarCorrida, cadastrarCorrida, removerCorrida } from "../api/corridas.js";
+import { buscarCheckpointsDaCorrida } from "../api/checkpoints.js";
+import { mesmoId } from "../api/id.js";
 import { Corrida } from "../classes/Corrida.js";
 import { criarItemCorrida, criarMensagemVazia } from "./componentes.js";
+import { executar, limparStatus, mostrarStatus } from "./mensagens.js";
 
 const lista = document.querySelector("#lista-corridas");
-const status = document.querySelector("#status");
 const botaoNova = document.querySelector("#nova-corrida");
 const modal = document.querySelector("#modal-corrida");
 const formulario = document.querySelector("#form-corrida");
@@ -13,14 +15,19 @@ const campoId = document.querySelector("#corrida-id");
 const campoNome = document.querySelector("#corrida-nome");
 const botaoCancelar = document.querySelector("#cancelar-corrida");
 
-function mostrarStatus(mensagem) {
-    status.textContent = mensagem;
-    status.hidden = false;
-}
+let corridas = [];
+let checkpoints = [];
 
-function limparStatus() {
-    status.textContent = "";
-    status.hidden = true;
+// Busca os dados na API e redesenha a lista
+async function atualizar() {
+    try {
+        ({ corridas, checkpoints } = await carregarDados());
+    } catch (erro) {
+        mostrarStatus(`Não foi possível carregar as corridas. ${erro.message}`);
+        return;
+    }
+    limparStatus();
+    renderizarCorridas();
 }
 
 function renderizarCorridas() {
@@ -32,7 +39,7 @@ function renderizarCorridas() {
     }
 
     for (const corrida of corridas) {
-        const total = checkpoints.filter((c) => c.corrida.id === corrida.id).length;
+        const total = checkpoints.filter((c) => mesmoId(c.corrida.id, corrida.id)).length;
 
         lista.appendChild(criarItemCorrida(corrida, total, {
             aoIniciar: iniciarCorrida,
@@ -43,28 +50,28 @@ function renderizarCorridas() {
     }
 }
 
-// A regra das transicoes fica na classe Corrida, que lanca erro se a transicao for invalida
-function mudarStatus(transicao) {
-    try {
-        transicao();
-    } catch (erro) {
-        mostrarStatus(erro.message);
-        return;
+// A regra das transicoes fica na classe Corrida, que lanca erro se a transicao for invalida.
+// A transicao e feita sobre a corrida atual da API, pois a lista exibida pode estar desatualizada.
+async function mudarStatus(id, descricao, transicao) {
+    const ok = await executar(descricao, async () => {
+        const corrida = await buscarCorrida(id);
+        transicao(corrida);
+        await atualizarCorrida(id, { status: corrida.status });
+    });
+    if (ok) {
+        await atualizar();
     }
-    salvarCorridas();
-    renderizarCorridas();
-    limparStatus();
 }
 
 function iniciarCorrida(corrida) {
-    mudarStatus(() => corrida.iniciar());
+    return mudarStatus(corrida.id, "Não foi possível iniciar a corrida.", (c) => c.iniciar());
 }
 
 function encerrarCorrida(corrida) {
     if (!confirm(`Deseja realmente encerrar a corrida "${corrida.nome}"? Depois de encerrada ela não aceita novos checkpoints.`)) {
         return;
     }
-    mudarStatus(() => corrida.encerrar());
+    return mudarStatus(corrida.id, "Não foi possível encerrar a corrida.", (c) => c.encerrar());
 }
 
 function abrirFormularioNovaCorrida() {
@@ -81,56 +88,60 @@ function abrirFormularioAlteracao(corrida) {
     modal.showModal();
 }
 
-function criarCorrida(nome) {
-    corridas.push(new Corrida(nome));
-    salvarCorridas();
-    renderizarCorridas();
-    limparStatus();
+async function criarCorrida(nome) {
+    const ok = await executar("Não foi possível cadastrar a corrida.", () => cadastrarCorrida(new Corrida(nome)));
+    if (ok) {
+        await atualizar();
+    }
 }
 
-function alterarCorrida(id, nome) {
-    const corrida = corridas.find((c) => c.id === Number(id));
-    corrida.nome = nome;
-    salvarCorridas();
-    renderizarCorridas();
-    limparStatus();
+async function alterarCorrida(id, nome) {
+    const ok = await executar("Não foi possível alterar a corrida.", () => atualizarCorrida(id, { nome }));
+    if (ok) {
+        await atualizar();
+    }
 }
 
-function excluirCorrida(id) {
-    // Corrida com checkpoints nao pode ser excluida
-    if (checkpoints.some((c) => c.corrida.id == id)) {
-        mostrarStatus("Não é possível excluir esta corrida porque existem checkpoints associados a ela.");
+async function excluirCorrida(id) {
+    // Corrida com checkpoints nao pode ser excluida (o JSON Server nao aplica essa regra)
+    const permitido = await executar("Não foi possível excluir a corrida.", async () => {
+        if ((await buscarCheckpointsDaCorrida(id)).length > 0) {
+            throw new Error("Não é possível excluir esta corrida porque existem checkpoints associados a ela.");
+        }
+    });
+
+    if (!permitido || !confirm("Deseja realmente excluir esta corrida?")) {
         return;
     }
 
-    if (!confirm("Deseja realmente excluir esta corrida?")) {
-        return;
+    if (await executar("Não foi possível excluir a corrida.", () => removerCorrida(id))) {
+        await atualizar();
     }
-
-    const indice = corridas.findIndex((c) => c.id === id);
-    corridas.splice(indice, 1);
-    salvarCorridas();
-    renderizarCorridas();
-    limparStatus();
 }
 
-export function inicializar() {
+export async function inicializar() {
     botaoNova.addEventListener("click", abrirFormularioNovaCorrida);
 
     botaoCancelar.addEventListener("click", () => modal.close());
 
-    formulario.addEventListener("submit", (evento) => {
+    formulario.addEventListener("submit", async (evento) => {
         evento.preventDefault();
+        const id = campoId.value;
         const nome = campoNome.value.trim();
-
-        if (campoId.value) {
-            alterarCorrida(campoId.value, nome);
-        } else {
-            criarCorrida(nome);
-        }
         formulario.reset();
         modal.close();
+
+        if (!nome) {
+            mostrarStatus("Informe o nome da corrida.");
+            return;
+        }
+
+        if (id) {
+            await alterarCorrida(id, nome);
+        } else {
+            await criarCorrida(nome);
+        }
     });
 
-    renderizarCorridas();
+    await atualizar();
 }

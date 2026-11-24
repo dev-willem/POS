@@ -1,16 +1,10 @@
 export class Professor {
-    static proximoId = 1;
-
     #id;
     #nome;
 
+    // O id e gerado pela API; fica null enquanto o professor ainda nao foi salvo
     constructor(nome, id = null) {
-        if (id === null) {
-            this.#id = Professor.proximoId++;
-        } else {
-            this.#id = id;
-            Professor.proximoId = Math.max(Professor.proximoId, id + 1);
-        }
+        this.#id = id;
         this.#nome = nome;
     }
 

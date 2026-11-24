@@ -1,10 +1,12 @@
-import { professores, salvarProfessores } from "../dados/professores.js";
-import { checkpoints } from "../dados/checkpoints.js";
+import { carregarDados } from "../api/dados.js";
+import { atualizarProfessor, cadastrarProfessor, removerProfessor } from "../api/professores.js";
+import { buscarCheckpointsDoProfessor } from "../api/checkpoints.js";
+import { mesmoId } from "../api/id.js";
 import { Professor } from "../classes/Professor.js";
 import { criarItemProfessor, criarMensagemVazia } from "./componentes.js";
+import { executar, limparStatus, mostrarStatus } from "./mensagens.js";
 
 const lista = document.querySelector("#lista-professores");
-const status = document.querySelector("#status");
 const botaoNova = document.querySelector("#nova-professor");
 const modal = document.querySelector("#modal-professor");
 const formulario = document.querySelector("#form-professor");
@@ -13,14 +15,19 @@ const campoId = document.querySelector("#professor-id");
 const campoNome = document.querySelector("#professor-nome");
 const botaoCancelar = document.querySelector("#cancelar-professor");
 
-function mostrarStatus(mensagem) {
-    status.textContent = mensagem;
-    status.hidden = false;
-}
+let professores = [];
+let checkpoints = [];
 
-function limparStatus() {
-    status.textContent = "";
-    status.hidden = true;
+// Busca os dados na API e redesenha a lista
+async function atualizar() {
+    try {
+        ({ professores, checkpoints } = await carregarDados());
+    } catch (erro) {
+        mostrarStatus(`Não foi possível carregar os professores. ${erro.message}`);
+        return;
+    }
+    limparStatus();
+    renderizarProfessores();
 }
 
 function renderizarProfessores() {
@@ -32,7 +39,7 @@ function renderizarProfessores() {
     }
 
     for (const professor of professores) {
-        const total = checkpoints.filter((c) => c.professor.id === professor.id).length;
+        const total = checkpoints.filter((c) => mesmoId(c.professor.id, professor.id)).length;
 
         lista.appendChild(criarItemProfessor(professor, total, {
             aoAlterar: abrirFormularioAlteracao,
@@ -55,56 +62,60 @@ function abrirFormularioAlteracao(professor) {
     modal.showModal();
 }
 
-function criarProfessor(nome) {
-    professores.push(new Professor(nome));
-    salvarProfessores();
-    renderizarProfessores();
-    limparStatus();
+async function criarProfessor(nome) {
+    const ok = await executar("Não foi possível cadastrar o professor.", () => cadastrarProfessor(new Professor(nome)));
+    if (ok) {
+        await atualizar();
+    }
 }
 
-function alterarProfessor(id, nome) {
-    const professor = professores.find((c) => c.id === Number(id));
-    professor.nome = nome;
-    salvarProfessores();
-    renderizarProfessores();
-    limparStatus();
+async function alterarProfessor(id, nome) {
+    const ok = await executar("Não foi possível alterar o professor.", () => atualizarProfessor(id, { nome }));
+    if (ok) {
+        await atualizar();
+    }
 }
 
-function excluirProfessor(id) {
-    // Professor com checkpoints nao pode ser excluido
-    if (checkpoints.some((c) => c.professor.id == id)) {
-        mostrarStatus("Não é possível excluir este professor porque ele é responsável por checkpoints.");
+async function excluirProfessor(id) {
+    // Professor com checkpoints nao pode ser excluido (o JSON Server nao aplica essa regra)
+    const permitido = await executar("Não foi possível excluir o professor.", async () => {
+        if ((await buscarCheckpointsDoProfessor(id)).length > 0) {
+            throw new Error("Não é possível excluir este professor porque ele é responsável por checkpoints.");
+        }
+    });
+
+    if (!permitido || !confirm("Deseja realmente excluir este professor?")) {
         return;
     }
 
-    if (!confirm("Deseja realmente excluir este professor?")) {
-        return;
+    if (await executar("Não foi possível excluir o professor.", () => removerProfessor(id))) {
+        await atualizar();
     }
-
-    const indice = professores.findIndex((c) => c.id === id);
-    professores.splice(indice, 1);
-    salvarProfessores();
-    renderizarProfessores();
-    limparStatus();
 }
 
-export function inicializar() {
+export async function inicializar() {
     botaoNova.addEventListener("click", abrirFormularioNovoProfessor);
 
     botaoCancelar.addEventListener("click", () => modal.close());
 
-    formulario.addEventListener("submit", (evento) => {
+    formulario.addEventListener("submit", async (evento) => {
         evento.preventDefault();
+        const id = campoId.value;
         const nome = campoNome.value.trim();
-
-        if (campoId.value) {
-            alterarProfessor(campoId.value, nome);
-        } else {
-            criarProfessor(nome);
-        }
         formulario.reset();
         modal.close();
+
+        if (!nome) {
+            mostrarStatus("Informe o nome do professor.");
+            return;
+        }
+
+        if (id) {
+            await alterarProfessor(id, nome);
+        } else {
+            await criarProfessor(nome);
+        }
     });
 
-    renderizarProfessores();
+    await atualizar();
 }
