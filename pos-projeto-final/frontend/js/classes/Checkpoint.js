@@ -45,39 +45,4 @@ export class Checkpoint {
     set professor(novoProfessor) {
         this.#professor = novoProfessor;
     }
-
-    render() {
-        const checkpoint = document.createElement("div");
-        checkpoint.classList.add("checkpoint");
-        checkpoint.dataset.id = this.#id;
-
-        const titulo = document.createElement("h3");
-        titulo.textContent = `Checkpoint ${this.#numero}`;
-
-        const corrida = document.createElement("p");
-        corrida.textContent = `Corrida: ${this.#corrida.nome}`;
-
-        const professor = document.createElement("p");
-        professor.textContent = `Responsável: ${this.#professor.nome}`;
-
-        const acoes = document.createElement("div");
-        acoes.classList.add("acoes");
-
-        const botaoAlterar = document.createElement("button");
-        botaoAlterar.type = "button";
-        botaoAlterar.classList.add("botao", "botao-secundario");
-        botaoAlterar.dataset.acao = "alterar";
-        botaoAlterar.textContent = "Alterar";
-
-        const botaoExcluir = document.createElement("button");
-        botaoExcluir.type = "button";
-        botaoExcluir.classList.add("botao", "botao-perigo");
-        botaoExcluir.dataset.acao = "excluir";
-        botaoExcluir.textContent = "Excluir";
-
-        acoes.append(botaoAlterar, botaoExcluir);
-        checkpoint.append(titulo, corrida, professor, acoes);
-
-        return checkpoint;
-    }
 }

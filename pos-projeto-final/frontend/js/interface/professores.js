@@ -1,6 +1,7 @@
 import { professores, salvarProfessores } from "../dados/professores.js";
 import { checkpoints } from "../dados/checkpoints.js";
 import { Professor } from "../classes/Professor.js";
+import { criarItemProfessor, criarMensagemVazia } from "./componentes.js";
 
 const lista = document.querySelector("#lista-professores");
 const status = document.querySelector("#status");
@@ -22,27 +23,21 @@ function limparStatus() {
     status.hidden = true;
 }
 
-function criarProfessores() {
+function renderizarProfessores() {
     lista.innerHTML = "";
 
     if (professores.length === 0) {
-        const vazio = document.createElement("p");
-        vazio.textContent = "Nenhum professor cadastrado.";
-        lista.appendChild(vazio);
+        lista.appendChild(criarMensagemVazia("Nenhum professor cadastrado."));
         return;
     }
 
     for (const professor of professores) {
         const total = checkpoints.filter((c) => c.professor.id === professor.id).length;
-        const item = professor.render(total);
 
-        const botaoAlterar = item.querySelector('[data-acao="alterar"]');
-        const botaoExcluir = item.querySelector('[data-acao="excluir"]');
-
-        botaoAlterar.addEventListener("click", () => abrirFormularioAlteracao(professor));
-        botaoExcluir.addEventListener("click", () => excluirProfessor(professor.id));
-
-        lista.appendChild(item);
+        lista.appendChild(criarItemProfessor(professor, total, {
+            aoAlterar: abrirFormularioAlteracao,
+            aoExcluir: (p) => excluirProfessor(p.id)
+        }));
     }
 }
 
@@ -63,7 +58,7 @@ function abrirFormularioAlteracao(professor) {
 function criarProfessor(nome) {
     professores.push(new Professor(nome));
     salvarProfessores();
-    criarProfessores();
+    renderizarProfessores();
     limparStatus();
 }
 
@@ -71,7 +66,7 @@ function alterarProfessor(id, nome) {
     const professor = professores.find((c) => c.id === Number(id));
     professor.nome = nome;
     salvarProfessores();
-    criarProfessores();
+    renderizarProfessores();
     limparStatus();
 }
 
@@ -89,7 +84,7 @@ function excluirProfessor(id) {
     const indice = professores.findIndex((c) => c.id === id);
     professores.splice(indice, 1);
     salvarProfessores();
-    criarProfessores();
+    renderizarProfessores();
     limparStatus();
 }
 
@@ -111,5 +106,5 @@ export function inicializar() {
         modal.close();
     });
 
-    criarProfessores();
+    renderizarProfessores();
 }

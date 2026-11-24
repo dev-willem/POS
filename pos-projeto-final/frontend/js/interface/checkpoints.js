@@ -2,6 +2,7 @@ import { checkpoints, salvarCheckpoints } from "../dados/checkpoints.js";
 import { corridas } from "../dados/corridas.js";
 import { professores } from "../dados/professores.js";
 import { Checkpoint } from "../classes/Checkpoint.js";
+import { criarItemCheckpoint, criarMensagemVazia, criarOpcoes } from "./componentes.js";
 
 const lista = document.querySelector("#lista-checkpoints");
 const status = document.querySelector("#status");
@@ -25,13 +26,11 @@ function limparStatus() {
     status.hidden = true;
 }
 
-function criarCheckpoints() {
+function renderizarCheckpoints() {
     lista.innerHTML = "";
 
     if (checkpoints.length === 0) {
-        const vazio = document.createElement("p");
-        vazio.textContent = "Nenhum checkpoint cadastrado.";
-        lista.appendChild(vazio);
+        lista.appendChild(criarMensagemVazia("Nenhum checkpoint cadastrado."));
         return;
     }
 
@@ -41,33 +40,10 @@ function criarCheckpoints() {
     );
 
     for (const checkpoint of ordenados) {
-        const item = checkpoint.render();
-
-        const botaoAlterar = item.querySelector('[data-acao="alterar"]');
-        const botaoExcluir = item.querySelector('[data-acao="excluir"]');
-
-        botaoAlterar.addEventListener("click", () => abrirFormularioAlteracao(checkpoint));
-        botaoExcluir.addEventListener("click", () => excluirCheckpoint(checkpoint.id));
-
-        lista.appendChild(item);
-    }
-}
-
-function preencherSelect(select, textoInicial, itens) {
-    select.innerHTML = "";
-
-    const inicial = document.createElement("option");
-    inicial.value = "";
-    inicial.disabled = true;
-    inicial.selected = true;
-    inicial.textContent = textoInicial;
-    select.appendChild(inicial);
-
-    for (const item of itens) {
-        const opcao = document.createElement("option");
-        opcao.value = item.id;
-        opcao.textContent = item.nome;
-        select.appendChild(opcao);
+        lista.appendChild(criarItemCheckpoint(checkpoint, {
+            aoAlterar: abrirFormularioAlteracao,
+            aoExcluir: (c) => excluirCheckpoint(c.id)
+        }));
     }
 }
 
@@ -87,8 +63,8 @@ function abrirFormularioNovoCheckpoint() {
     titulo.textContent = "Novo checkpoint";
     campoId.value = "";
     campoNumero.value = "";
-    preencherSelect(campoCorrida, "Selecione a corrida", iniciadas);
-    preencherSelect(campoProfessor, "Selecione o professor", professores);
+    campoCorrida.replaceChildren(...criarOpcoes("Selecione a corrida", iniciadas));
+    campoProfessor.replaceChildren(...criarOpcoes("Selecione o professor", professores));
     modal.showModal();
 }
 
@@ -99,8 +75,8 @@ function abrirFormularioAlteracao(checkpoint) {
     campoNumero.value = checkpoint.numero;
     // Alem das iniciadas, mantem a corrida atual do checkpoint, mesmo encerrada
     const disponiveis = corridas.filter((c) => c.aceitaCheckpoints || c.id === checkpoint.corrida.id);
-    preencherSelect(campoCorrida, "Selecione a corrida", disponiveis);
-    preencherSelect(campoProfessor, "Selecione o professor", professores);
+    campoCorrida.replaceChildren(...criarOpcoes("Selecione a corrida", disponiveis));
+    campoProfessor.replaceChildren(...criarOpcoes("Selecione o professor", professores));
     campoCorrida.value = checkpoint.corrida.id;
     campoProfessor.value = checkpoint.professor.id;
     modal.showModal();
@@ -134,7 +110,7 @@ function criarCheckpoint(numero, corrida, professor) {
 
     checkpoints.push(new Checkpoint(numero, corrida, professor));
     salvarCheckpoints();
-    criarCheckpoints();
+    renderizarCheckpoints();
     limparStatus();
     return true;
 }
@@ -156,7 +132,7 @@ function alterarCheckpoint(id, numero, corrida, professor) {
     checkpoint.corrida = corrida;
     checkpoint.professor = professor;
     salvarCheckpoints();
-    criarCheckpoints();
+    renderizarCheckpoints();
     limparStatus();
     return true;
 }
@@ -169,7 +145,7 @@ function excluirCheckpoint(id) {
     const indice = checkpoints.findIndex((c) => c.id === id);
     checkpoints.splice(indice, 1);
     salvarCheckpoints();
-    criarCheckpoints();
+    renderizarCheckpoints();
     limparStatus();
 }
 
@@ -193,5 +169,5 @@ export function inicializar() {
         modal.close();
     });
 
-    criarCheckpoints();
+    renderizarCheckpoints();
 }

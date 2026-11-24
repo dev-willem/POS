@@ -1,6 +1,7 @@
 import { corridas, salvarCorridas } from "../dados/corridas.js";
 import { checkpoints } from "../dados/checkpoints.js";
 import { Corrida } from "../classes/Corrida.js";
+import { criarItemCorrida, criarMensagemVazia } from "./componentes.js";
 
 const lista = document.querySelector("#lista-corridas");
 const status = document.querySelector("#status");
@@ -22,31 +23,23 @@ function limparStatus() {
     status.hidden = true;
 }
 
-function criarCorridas() {
+function renderizarCorridas() {
     lista.innerHTML = "";
 
     if (corridas.length === 0) {
-        const vazio = document.createElement("p");
-        vazio.textContent = "Nenhuma corrida cadastrada.";
-        lista.appendChild(vazio);
+        lista.appendChild(criarMensagemVazia("Nenhuma corrida cadastrada."));
         return;
     }
 
     for (const corrida of corridas) {
         const total = checkpoints.filter((c) => c.corrida.id === corrida.id).length;
-        const item = corrida.render(total);
 
-        const botaoIniciar = item.querySelector('[data-acao="iniciar"]');
-        const botaoEncerrar = item.querySelector('[data-acao="encerrar"]');
-        const botaoAlterar = item.querySelector('[data-acao="alterar"]');
-        const botaoExcluir = item.querySelector('[data-acao="excluir"]');
-
-        botaoIniciar?.addEventListener("click", () => iniciarCorrida(corrida));
-        botaoEncerrar?.addEventListener("click", () => encerrarCorrida(corrida));
-        botaoAlterar.addEventListener("click", () => abrirFormularioAlteracao(corrida));
-        botaoExcluir.addEventListener("click", () => excluirCorrida(corrida.id));
-
-        lista.appendChild(item);
+        lista.appendChild(criarItemCorrida(corrida, total, {
+            aoIniciar: iniciarCorrida,
+            aoEncerrar: encerrarCorrida,
+            aoAlterar: abrirFormularioAlteracao,
+            aoExcluir: (c) => excluirCorrida(c.id)
+        }));
     }
 }
 
@@ -59,7 +52,7 @@ function mudarStatus(transicao) {
         return;
     }
     salvarCorridas();
-    criarCorridas();
+    renderizarCorridas();
     limparStatus();
 }
 
@@ -91,7 +84,7 @@ function abrirFormularioAlteracao(corrida) {
 function criarCorrida(nome) {
     corridas.push(new Corrida(nome));
     salvarCorridas();
-    criarCorridas();
+    renderizarCorridas();
     limparStatus();
 }
 
@@ -99,7 +92,7 @@ function alterarCorrida(id, nome) {
     const corrida = corridas.find((c) => c.id === Number(id));
     corrida.nome = nome;
     salvarCorridas();
-    criarCorridas();
+    renderizarCorridas();
     limparStatus();
 }
 
@@ -117,7 +110,7 @@ function excluirCorrida(id) {
     const indice = corridas.findIndex((c) => c.id === id);
     corridas.splice(indice, 1);
     salvarCorridas();
-    criarCorridas();
+    renderizarCorridas();
     limparStatus();
 }
 
@@ -139,5 +132,5 @@ export function inicializar() {
         modal.close();
     });
 
-    criarCorridas();
+    renderizarCorridas();
 }

@@ -14,6 +14,7 @@ Aplicados na interface web do projeto, em [`pos-projeto-final/frontend/`](pos-pr
 | `frontend-v2` | Refatoração em módulos (Cap. 4), front de Corridas consumindo a API Flask |
 | `frontend-v3` | Recursos relacionados (Corrida, Professor, Checkpoint) com persistência em localStorage (Cap. 5) |
 | `prova-pratica` | Prova prática: status da corrida (Criada, Iniciada, Encerrada) e registro de checkpoints somente em corridas iniciadas |
+| `frontend-v4` | Módulo de componentes: as classes do domínio deixam de construir HTML (`render()` removido) e a interface passa a usar `interface/componentes.js` |
 
 ## Projeto final — Programação Orientada a Serviços
 

@@ -75,8 +75,47 @@ frontend/
     ├── corridas.js, professores.js, checkpoints.js   pontos de entrada das páginas
     ├── classes/     Corrida.js, Professor.js, Checkpoint.js
     ├── dados/       corridas.js, professores.js, checkpoints.js   (localStorage)
-    └── interface/   corridas.js, professores.js, checkpoints.js   (listas, formulários, eventos)
+    └── interface/   componentes.js                                 (construção dos elementos HTML)
+                     corridas.js, professores.js, checkpoints.js   (listas, formulários, eventos)
 ```
+
+### Módulo de componentes (Frontend v.4)
+
+As classes do domínio deixaram de construir HTML: toda a criação de elementos foi transferida para [`frontend/js/interface/componentes.js`](frontend/js/interface/componentes.js).
+
+**Métodos de renderização identificados e removidos**
+
+| Classe | Método removido | O que apresentava |
+| --- | --- | --- |
+| `Corrida` | `render(totalCheckpoints)` | Nome, status (selo colorido), total de checkpoints e botões Iniciar/Encerrar (conforme o status), Alterar e Excluir |
+| `Professor` | `render(totalCheckpoints)` | Nome, total de checkpoints sob responsabilidade e botões Alterar e Excluir |
+| `Checkpoint` | `render()` | Número, corrida, professor responsável e botões Alterar e Excluir |
+
+Além disso, `interface/checkpoints.js` montava as `<option>` dos selects (`preencherSelect`) e as três listas montavam o parágrafo de "lista vazia"; esse código também foi para os componentes.
+
+As classes ficaram só com atributos, construtor, getters/setters e regras de comportamento (por exemplo `iniciar()`, `encerrar()` e `aceitaCheckpoints` em `Corrida`). Nenhuma delas referencia `document`.
+
+**Componentes criados** (todos retornam o elemento criado; quem chama decide onde inseri-lo)
+
+| Função | Recebe | Retorna |
+| --- | --- | --- |
+| `criarItemCorrida(corrida, totalCheckpoints, { aoIniciar, aoEncerrar, aoAlterar, aoExcluir })` | corrida, total de checkpoints e callbacks | cartão `.corrida`; mostra só as ações compatíveis com o status |
+| `criarItemProfessor(professor, totalCheckpoints, { aoAlterar, aoExcluir })` | professor, total e callbacks | cartão `.professor` |
+| `criarItemCheckpoint(checkpoint, { aoAlterar, aoExcluir })` | checkpoint e callbacks | cartão `.checkpoint` |
+| `criarOpcoes(textoInicial, itens)` | texto inicial e lista de itens com `id` e `nome` | lista de `<option>` (a primeira, desabilitada, é o texto inicial) |
+| `criarMensagemVazia(texto)` | texto | parágrafo `<p>` da lista vazia |
+
+Os componentes usam `textContent` (nunca `innerHTML` com dados) e não conhecem regras de negócio: ao clicar em um botão apenas chamam o callback recebido, com a entidade como argumento.
+
+**Responsabilidades de cada módulo**
+
+| Módulo | Responsabilidade |
+| --- | --- |
+| `classes/` | Representar as entidades (atributos, validações e comportamento), sem conhecer HTML |
+| `dados/` | Manter as listas em memória e persistir/recuperar no `localStorage` |
+| `interface/componentes.js` | Transformar os dados das entidades em elementos HTML |
+| `interface/corridas.js`, `professores.js`, `checkpoints.js` | Regras das operações (criar, alterar, excluir, transições de status), formulários e eventos; usam os componentes para exibir as listas (`renderizarCorridas`, `renderizarProfessores`, `renderizarCheckpoints`) |
+| `corridas.js`, `professores.js`, `checkpoints.js` (raiz de `js/`) | Ponto de entrada de cada página |
 
 ```mermaid
 classDiagram
@@ -144,8 +183,9 @@ stateDiagram-v2
 
 | Capítulo | Conceito | Onde está |
 | --- | --- | --- |
-| Cap. 1 — JavaScript na página web | Criação de elementos com `createElement`/`textContent` e inserção no DOM | `render()` das classes |
-| Cap. 2 — Objetos e classes | Classes com atributos privados, getters/setters e `render()`; exemplo de herança (`CorridaEmAndamento`) na branch `frontend-v2` | `classes/` |
+| Cap. 1 — JavaScript na página web | Criação de elementos com `createElement`/`textContent` e inserção no DOM | `interface/componentes.js` (antes, `render()` das classes) |
+| Cap. 2 — Objetos e classes | Classes com atributos privados, getters/setters e métodos de comportamento; exemplo de herança (`CorridaEmAndamento`) na branch `frontend-v2` | `classes/` |
 | Cap. 3 — Eventos e interação | Eventos, formulários em `<dialog>`, botões com `data-acao`, `dataset` | `interface/` + páginas `.html` |
 | Cap. 4 — Módulos | `import`/`export`, separação classes/dados/interface e pontos de entrada por página | toda a pasta `js/` |
 | Cap. 5 — Recursos relacionados e localStorage | Recursos relacionados, referências entre objetos, `localStorage`, reconstrução de objetos e relações, integridade | `classes/Checkpoint.js`, `dados/`, `interface/checkpoints.js` |
+| Frontend v.4 — Módulo de componentes | Separação entre domínio e apresentação: funções que constroem os elementos e recebem callbacks | `interface/componentes.js` |
