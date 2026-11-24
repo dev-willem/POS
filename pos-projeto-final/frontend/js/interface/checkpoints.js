@@ -1,11 +1,13 @@
-import { checkpoints, salvarCheckpoints } from "../dados/checkpoints.js";
-import { corridas } from "../dados/corridas.js";
-import { professores } from "../dados/professores.js";
+import { carregarDados } from "../api/dados.js";
+import { buscarCorrida } from "../api/corridas.js";
+import { buscarProfessor } from "../api/professores.js";
+import { atualizarCheckpoint, buscarCheckpointsDaCorrida, cadastrarCheckpoint, removerCheckpoint } from "../api/checkpoints.js";
+import { mesmoId } from "../api/id.js";
 import { Checkpoint } from "../classes/Checkpoint.js";
 import { criarItemCheckpoint, criarMensagemVazia, criarOpcoes } from "./componentes.js";
+import { executar, limparStatus, mostrarStatus } from "./mensagens.js";
 
 const lista = document.querySelector("#lista-checkpoints");
-const status = document.querySelector("#status");
 const botaoNovo = document.querySelector("#novo-checkpoint");
 const modal = document.querySelector("#modal-checkpoint");
 const formulario = document.querySelector("#form-checkpoint");
@@ -16,14 +18,20 @@ const campoCorrida = document.querySelector("#checkpoint-corrida");
 const campoProfessor = document.querySelector("#checkpoint-professor");
 const botaoCancelar = document.querySelector("#cancelar-checkpoint");
 
-function mostrarStatus(mensagem) {
-    status.textContent = mensagem;
-    status.hidden = false;
-}
+let corridas = [];
+let professores = [];
+let checkpoints = [];
 
-function limparStatus() {
-    status.textContent = "";
-    status.hidden = true;
+// Busca os dados na API e redesenha a lista
+async function atualizar() {
+    try {
+        ({ corridas, professores, checkpoints } = await carregarDados());
+    } catch (erro) {
+        mostrarStatus(`Não foi possível carregar os checkpoints. ${erro.message}`);
+        return;
+    }
+    limparStatus();
+    renderizarCheckpoints();
 }
 
 function renderizarCheckpoints() {
@@ -74,7 +82,7 @@ function abrirFormularioAlteracao(checkpoint) {
     campoId.value = checkpoint.id;
     campoNumero.value = checkpoint.numero;
     // Alem das iniciadas, mantem a corrida atual do checkpoint, mesmo encerrada
-    const disponiveis = corridas.filter((c) => c.aceitaCheckpoints || c.id === checkpoint.corrida.id);
+    const disponiveis = corridas.filter((c) => c.aceitaCheckpoints || mesmoId(c.id, checkpoint.corrida.id));
     campoCorrida.replaceChildren(...criarOpcoes("Selecione a corrida", disponiveis));
     campoProfessor.replaceChildren(...criarOpcoes("Selecione o professor", professores));
     campoCorrida.value = checkpoint.corrida.id;
@@ -82,92 +90,84 @@ function abrirFormularioAlteracao(checkpoint) {
     modal.showModal();
 }
 
-// Numero nao pode se repetir na mesma corrida
-function numeroJaExiste(numero, corrida, idIgnorado) {
-    return checkpoints.some((c) =>
-        c.corrida.id === corrida.id && c.numero === numero && c.id !== idIgnorado
-    );
+// Regra de negocio: so corridas iniciadas recebem novos registros de checkpoint.
+// Recebe a corrida lida da API no momento da operacao, nao a que esta na tela.
+function exigirCorridaIniciada(corrida) {
+    if (!corrida.aceitaCheckpoints) {
+        throw new Error(`A corrida "${corrida.nome}" está ${corrida.status}. Só é possível registrar checkpoints em corridas Iniciadas.`);
+    }
 }
 
-// Regra de negocio: so corridas iniciadas recebem novos registros de checkpoint
-function corridaNaoAceitaCheckpoints(corrida) {
-    if (corrida.aceitaCheckpoints) {
-        return false;
+// Numero nao pode se repetir na mesma corrida (consulta os checkpoints atuais da API)
+async function exigirNumeroLivre(numero, corrida, idIgnorado = null) {
+    const existentes = await buscarCheckpointsDaCorrida(corrida.id);
+    if (existentes.some((c) => c.numero === numero && (idIgnorado === null || !mesmoId(c.id, idIgnorado)))) {
+        throw new Error(`Já existe o checkpoint ${numero} na corrida "${corrida.nome}".`);
     }
-    mostrarStatus(`A corrida "${corrida.nome}" está ${corrida.status}. Só é possível registrar checkpoints em corridas Iniciadas.`);
-    return true;
 }
 
-function criarCheckpoint(numero, corrida, professor) {
-    if (corridaNaoAceitaCheckpoints(corrida)) {
-        return false;
+async function criarCheckpoint({ numero, corridaId, professorId }) {
+    const ok = await executar("Não foi possível cadastrar o checkpoint.", async () => {
+        const [corrida, professor] = await Promise.all([buscarCorrida(corridaId), buscarProfessor(professorId)]);
+        exigirCorridaIniciada(corrida);
+        await exigirNumeroLivre(numero, corrida);
+        await cadastrarCheckpoint(new Checkpoint(numero, corrida, professor));
+    });
+    if (ok) {
+        await atualizar();
     }
-
-    if (numeroJaExiste(numero, corrida, null)) {
-        mostrarStatus(`Já existe o checkpoint ${numero} na corrida "${corrida.nome}".`);
-        return false;
-    }
-
-    checkpoints.push(new Checkpoint(numero, corrida, professor));
-    salvarCheckpoints();
-    renderizarCheckpoints();
-    limparStatus();
-    return true;
 }
 
-function alterarCheckpoint(id, numero, corrida, professor) {
-    const checkpoint = checkpoints.find((c) => c.id === Number(id));
+async function alterarCheckpoint({ id, numero, corridaId, professorId }) {
+    const atual = checkpoints.find((c) => mesmoId(c.id, id));
 
-    // Mover o checkpoint para outra corrida equivale a registra-lo nela
-    if (corrida.id !== checkpoint.corrida.id && corridaNaoAceitaCheckpoints(corrida)) {
-        return false;
+    const ok = await executar("Não foi possível alterar o checkpoint.", async () => {
+        const [corrida, professor] = await Promise.all([buscarCorrida(corridaId), buscarProfessor(professorId)]);
+        // Mover o checkpoint para outra corrida equivale a registra-lo nela
+        if (!mesmoId(corrida.id, atual.corrida.id)) {
+            exigirCorridaIniciada(corrida);
+        }
+        await exigirNumeroLivre(numero, corrida, id);
+        await atualizarCheckpoint(id, { numero, corridaId: corrida.id, professorId: professor.id });
+    });
+    if (ok) {
+        await atualizar();
     }
-
-    if (numeroJaExiste(numero, corrida, checkpoint.id)) {
-        mostrarStatus(`Já existe o checkpoint ${numero} na corrida "${corrida.nome}".`);
-        return false;
-    }
-
-    checkpoint.numero = numero;
-    checkpoint.corrida = corrida;
-    checkpoint.professor = professor;
-    salvarCheckpoints();
-    renderizarCheckpoints();
-    limparStatus();
-    return true;
 }
 
-function excluirCheckpoint(id) {
+async function excluirCheckpoint(id) {
     if (!confirm("Deseja realmente excluir este checkpoint?")) {
         return;
     }
 
-    const indice = checkpoints.findIndex((c) => c.id === id);
-    checkpoints.splice(indice, 1);
-    salvarCheckpoints();
-    renderizarCheckpoints();
-    limparStatus();
+    if (await executar("Não foi possível excluir o checkpoint.", () => removerCheckpoint(id))) {
+        await atualizar();
+    }
 }
 
-export function inicializar() {
+export async function inicializar() {
     botaoNovo.addEventListener("click", abrirFormularioNovoCheckpoint);
 
     botaoCancelar.addEventListener("click", () => modal.close());
 
-    formulario.addEventListener("submit", (evento) => {
+    formulario.addEventListener("submit", async (evento) => {
         evento.preventDefault();
-        const numero = Number(campoNumero.value);
-        const corrida = corridas.find((c) => c.id === Number(campoCorrida.value));
-        const professor = professores.find((p) => p.id === Number(campoProfessor.value));
-
-        if (campoId.value) {
-            alterarCheckpoint(campoId.value, numero, corrida, professor);
-        } else {
-            criarCheckpoint(numero, corrida, professor);
-        }
+        // Os ids ficam como texto, exatamente como vem do formulario e da API
+        const dados = {
+            id: campoId.value,
+            numero: Number(campoNumero.value),
+            corridaId: campoCorrida.value,
+            professorId: campoProfessor.value
+        };
         formulario.reset();
         modal.close();
+
+        if (dados.id) {
+            await alterarCheckpoint(dados);
+        } else {
+            await criarCheckpoint(dados);
+        }
     });
 
-    renderizarCheckpoints();
+    await atualizar();
 }

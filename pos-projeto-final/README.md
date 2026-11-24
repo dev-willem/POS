@@ -31,7 +31,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-A API e a interface sobem em `http://127.0.0.1:5000`. Na v3 a interface não consome a API (usa `localStorage`); o Flask só serve os arquivos estáticos, já que módulos ES não carregam via `file://`.
+A API Flask e a interface sobem em `http://127.0.0.1:5000`. A interface não consome a API Flask: desde o Frontend v.5 ela usa o JSON Server (porta 3000, veja [Interface web](#interface-web)), e o Flask só serve os arquivos estáticos, já que módulos ES não carregam via `file://`.
 
 ### Endpoints
 
@@ -65,7 +65,29 @@ curl http://127.0.0.1:5000/equipes/1/historico
 
 ## Interface web
 
-CRUD de **Corrida**, **Professor** e **Checkpoint** em HTML, CSS e JavaScript (módulos ES), com dados no `localStorage`. Para executar: `python app.py` e abrir `http://127.0.0.1:5000/`.
+CRUD de **Corrida**, **Professor** e **Checkpoint** em HTML, CSS e JavaScript (módulos ES). Desde o Frontend v.5 os dados ficam em uma **API REST (JSON Server)**, e não mais no `localStorage`.
+
+### Como executar
+
+Pré-requisitos: Python 3.10+ (veja [Executando](#executando)) e Node.js 22.12 ou mais recente (exigência do JSON Server 1). São dois processos, cada um em um terminal:
+
+```bash
+# Terminal 1 - API REST (JSON Server, http://localhost:3000)
+cd pos-projeto-final
+npm install
+npm run api
+```
+
+```bash
+# Terminal 2 - interface (Flask, http://127.0.0.1:5000), com o venv ativo
+python app.py
+```
+
+Abra `http://127.0.0.1:5000/`. Se o JSON Server não estiver em execução, as páginas exibem a mensagem de que não foi possível comunicar com a API.
+
+- Para conferir a API: `curl http://localhost:3000/corridas` ou abra a mesma URL no navegador.
+- O JSON Server grava as alterações em [`db.json`](db.json). Para voltar aos dados iniciais: `git checkout db.json`.
+- Qualquer servidor de arquivos estáticos serve no lugar do Flask. O endereço da API fica em `URL_BASE`, em [`frontend/js/api/http.js`](frontend/js/api/http.js).
 
 ```
 frontend/
@@ -74,9 +96,13 @@ frontend/
 └── js/
     ├── corridas.js, professores.js, checkpoints.js   pontos de entrada das páginas
     ├── classes/     Corrida.js, Professor.js, Checkpoint.js
-    ├── dados/       corridas.js, professores.js, checkpoints.js   (localStorage)
+    ├── api/         http.js                                        (função requisicao e ErroApi)
+    │                id.js                                          (critério único de comparação de ids)
+    │                corridas.js, professores.js, checkpoints.js   (listar, buscar, cadastrar, atualizar, remover)
+    │                dados.js                                       (carrega os três recursos e liga as referências)
     └── interface/   componentes.js                                 (construção dos elementos HTML)
-                     corridas.js, professores.js, checkpoints.js   (listas, formulários, eventos)
+                     mensagens.js                                   (mensagem de status e tratamento de erros)
+                     corridas.js, professores.js, checkpoints.js   (listas, formulários, eventos, regras)
 ```
 
 ### Módulo de componentes (Frontend v.4)
@@ -112,9 +138,10 @@ Os componentes usam `textContent` (nunca `innerHTML` com dados) e não conhecem 
 | Módulo | Responsabilidade |
 | --- | --- |
 | `classes/` | Representar as entidades (atributos, validações e comportamento), sem conhecer HTML |
-| `dados/` | Manter as listas em memória e persistir/recuperar no `localStorage` |
+| `api/` | Falar com o servidor: montar as requisições HTTP e converter as respostas em objetos das classes (sem conhecer HTML) |
 | `interface/componentes.js` | Transformar os dados das entidades em elementos HTML |
-| `interface/corridas.js`, `professores.js`, `checkpoints.js` | Regras das operações (criar, alterar, excluir, transições de status), formulários e eventos; usam os componentes para exibir as listas (`renderizarCorridas`, `renderizarProfessores`, `renderizarCheckpoints`) |
+| `interface/mensagens.js` | Exibir mensagens de status e transformar falhas das operações em mensagens para o usuário |
+| `interface/corridas.js`, `professores.js`, `checkpoints.js` | Regras das operações (criar, alterar, excluir, transições de status), formulários e eventos; chamam `api/` e usam os componentes para exibir as listas (`renderizarCorridas`, `renderizarProfessores`, `renderizarCheckpoints`) |
 | `corridas.js`, `professores.js`, `checkpoints.js` (raiz de `js/`) | Ponto de entrada de cada página |
 
 ```mermaid
@@ -126,21 +153,54 @@ classDiagram
     Checkpoint "0..*" --> "1" Professor
 ```
 
-### Persistência
+### Persistência e integração com a API REST (Frontend v.5)
 
-Chaves: `corridas`, `professores` e `checkpoints`. Em memória o `Checkpoint` referencia objetos `Corrida` e `Professor`; no `localStorage` guarda só os ids:
-
-```json
-[{"id":1,"numero":1,"corridaId":1,"professorId":2}]
-```
-
-Na carga, corridas e professores são lidos primeiro; depois os checkpoints, que recuperam suas referências pelos ids. Os ids são preservados e `proximoId` é ajustado com `Math.max`.
-
-A corrida também guarda o `status`; corridas salvas antes dessa versão (sem o campo) voltam como `Criada`:
+Os dados ficam em [`db.json`](db.json), servido pelo JSON Server (`json-server 1.0.0-beta.15`). Há uma coleção para cada recurso e os relacionamentos são ids guardados no checkpoint:
 
 ```json
-[{"id":1,"nome":"Trilha da Serra","status":"Iniciada"}]
+{
+  "corridas":    [{ "id": "a3f9", "nome": "Trilha da Serra", "status": "Iniciada" }],
+  "professores": [{ "id": "d41a", "nome": "Prof. Ana Souza" }],
+  "checkpoints": [{ "id": "k7c1", "numero": 1, "corridaId": "a3f9", "professorId": "d41a" }]
+}
 ```
+
+O arquivo já traz registros iniciais (três corridas, uma em cada status, quatro professores e três checkpoints) para testar a aplicação.
+
+| Recurso | Rotas usadas pela interface |
+| --- | --- |
+| Corridas | `GET /corridas`, `GET /corridas/:id`, `POST /corridas`, `PATCH /corridas/:id` (nome ou status), `DELETE /corridas/:id` |
+| Professores | `GET /professores`, `GET /professores/:id`, `POST /professores`, `PATCH /professores/:id`, `DELETE /professores/:id` |
+| Checkpoints | `GET /checkpoints`, `POST /checkpoints`, `PATCH /checkpoints/:id`, `DELETE /checkpoints/:id` |
+
+**O que mudou em relação à versão com `localStorage`**
+
+- A pasta `js/dados/` (listas em memória + `localStorage`) foi substituída por `js/api/`. As classes continuam as mesmas, mas deixaram de gerar ids: o `id` é criado pelo servidor (`proximoId` e o `Math.max` foram removidos).
+- `api/http.js` concentra a única chamada ao `fetch` (`requisicao`) e o erro `ErroApi`. `api/corridas.js`, `api/professores.js` e `api/checkpoints.js` expõem `listar`, `buscar`, `cadastrar`, `atualizar` e `remover`, e devolvem objetos `Corrida`, `Professor` e `Checkpoint`; a interface nunca monta uma requisição.
+- `api/dados.js` carrega corridas e professores e, com eles, reconstrói as referências dos checkpoints pelos ids, como a versão anterior fazia na carga do `localStorage`.
+- Os módulos de `interface/` ficaram assíncronos (`async`/`await`): depois de cada operação bem-sucedida a lista é recarregada da API, então a tela sempre mostra o que está no servidor. Os componentes (`componentes.js`) não mudaram.
+
+**Identificadores**
+
+O JSON Server gera ids textuais (ex.: `iHoWInKVIt8`) e ignora o `id` enviado no `POST`. Por isso o código nunca converte ids para número: `id`, `corridaId` e `professorId` são guardados como vieram da API, e todas as comparações usam `mesmoId` (`api/id.js`), que compara como texto, inclusive com o `value` de um `<select>`. O filtro por query string do JSON Server (`?corridaId=42`) não casa ids textuais que parecem número, então as consultas por corrida ou professor são feitas no cliente sobre `GET /checkpoints`.
+
+**Regras de negócio**
+
+O JSON Server não aplica regras, então elas continuam na aplicação e são verificadas contra os dados **atuais da API**, não contra o que está na tela (que pode estar desatualizada):
+
+- Corrida ou professor com checkpoints não pode ser excluído.
+- O número de um checkpoint não pode se repetir na mesma corrida.
+- Checkpoints só são registrados em corridas `Iniciada` (ao criar, ou ao mover um checkpoint para outra corrida).
+- O status avança só em `Criada → Iniciada → Encerrada`: `Corrida.iniciar()` e `Corrida.encerrar()` são chamados sobre a corrida lida da API antes do `PATCH`.
+- Encerrar uma corrida não apaga os checkpoints já registrados.
+
+Em um sistema real essas regras críticas também devem ser protegidas no servidor.
+
+**Tratamento de erros**
+
+`requisicao` converte as falhas em `ErroApi` com mensagem legível: API fora do ar (`fetch` falhou), `404` (registro já removido) e qualquer outro status HTTP de erro. `interface/mensagens.js` mostra o texto no `#status` da página, com o contexto da operação, por exemplo: *"Não foi possível cadastrar a corrida. Não foi possível se comunicar com a API (http://localhost:3000). Verifique se o JSON Server está em execução."*. Falhas de carregamento aparecem como *"Não foi possível carregar as corridas. ..."*.
+
+O registro dos testes executados está em [`docs/testes-api-rest.md`](docs/testes-api-rest.md).
 
 ### Ciclo de vida da corrida
 
@@ -158,7 +218,7 @@ stateDiagram-v2
 - A listagem de corridas mostra o status e oferece só a ação compatível: **Iniciar** (corrida `Criada`) ou **Encerrar** (corrida `Iniciada`, com confirmação). Corrida `Encerrada` não tem nenhuma das duas.
 - O registro de checkpoints só é aceito em corridas `Iniciada`. A verificação está em `criarCheckpoint` e em `alterarCheckpoint` (mover um checkpoint para outra corrida equivale a registrá-lo nela), em `interface/checkpoints.js`, e não só no formulário: mesmo que a opção de uma corrida `Criada` ou `Encerrada` seja forçada no formulário, a operação é recusada com mensagem.
 - Encerrar uma corrida não apaga nada: os checkpoints já registrados permanecem.
-- O status é salvo no `localStorage` a cada transição e mantido após recarregar a página.
+- O status é salvo na API (`PATCH /corridas/:id`) a cada transição e mantido após recarregar a página.
 
 ### Regras de integridade
 
@@ -169,7 +229,9 @@ stateDiagram-v2
 
 ### Como testar
 
-1. Cadastre algumas corridas e professores. As corridas nascem como `Criada`.
+Com a API (`npm run api`) e o Flask (`python app.py`) em execução:
+
+1. Cadastre algumas corridas e professores (ou use os registros iniciais do `db.json`). As corridas nascem como `Criada`.
 2. Em Checkpoints, clique em "Novo checkpoint": é exibida a mensagem de que não há corrida iniciada.
 3. Em Corridas, clique em **Iniciar** em uma corrida; o status muda para `Iniciada` e o botão passa a ser **Encerrar**.
 4. Cadastre um checkpoint selecionando a corrida iniciada e o professor.
@@ -178,6 +240,8 @@ stateDiagram-v2
 7. Tente registrar outro checkpoint: a corrida encerrada não aparece na lista e, se for forçada, a operação é recusada.
 8. Altere e exclua registros.
 9. Tente excluir uma corrida ou um professor que tenha checkpoints e veja a mensagem de bloqueio.
+10. Confira os dados em `http://localhost:3000/corridas`, `/professores` e `/checkpoints` (ou no `db.json`).
+11. Pare o JSON Server (`Ctrl + C`) e tente cadastrar algo ou recarregar a página: a tela mostra uma mensagem de erro de comunicação com a API.
 
 ### Onde cada capítulo foi aplicado
 
@@ -187,5 +251,6 @@ stateDiagram-v2
 | Cap. 2 — Objetos e classes | Classes com atributos privados, getters/setters e métodos de comportamento; exemplo de herança (`CorridaEmAndamento`) na branch `frontend-v2` | `classes/` |
 | Cap. 3 — Eventos e interação | Eventos, formulários em `<dialog>`, botões com `data-acao`, `dataset` | `interface/` + páginas `.html` |
 | Cap. 4 — Módulos | `import`/`export`, separação classes/dados/interface e pontos de entrada por página | toda a pasta `js/` |
-| Cap. 5 — Recursos relacionados e localStorage | Recursos relacionados, referências entre objetos, `localStorage`, reconstrução de objetos e relações, integridade | `classes/Checkpoint.js`, `dados/`, `interface/checkpoints.js` |
+| Cap. 5 — Recursos relacionados e localStorage | Recursos relacionados, referências entre objetos, reconstrução de objetos e relações, integridade (o `localStorage` foi usado até a branch `frontend-v4`) | `classes/Checkpoint.js`, `api/checkpoints.js`, `interface/checkpoints.js` |
 | Frontend v.4 — Módulo de componentes | Separação entre domínio e apresentação: funções que constroem os elementos e recebem callbacks | `interface/componentes.js` |
+| Frontend v.5 — API REST | `fetch` com `async`/`await`, JSON Server, ids textuais, tratamento de erros HTTP | `api/`, `interface/mensagens.js`, `db.json` |

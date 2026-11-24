@@ -1,0 +1,18 @@
+{
+  "corridas": [
+    { "id": "a3f9", "nome": "Trilha da Serra", "status": "Iniciada" },
+    { "id": "b71c", "nome": "Corrida do Vale", "status": "Criada" },
+    { "id": "c2e8", "nome": "Travessia da Mata", "status": "Encerrada" }
+  ],
+  "professores": [
+    { "id": "d41a", "nome": "Prof. Ana Souza" },
+    { "id": "e92b", "nome": "Prof. Bruno Lima" },
+    { "id": "f05d", "nome": "Prof. Carla Dias" },
+    { "id": "h6k4", "nome": "Prof. Diego Rocha" }
+  ],
+  "checkpoints": [
+    { "id": "k7c1", "numero": 1, "corridaId": "a3f9", "professorId": "d41a" },
+    { "id": "k8e2", "numero": 2, "corridaId": "a3f9", "professorId": "e92b" },
+    { "id": "k9a3", "numero": 1, "corridaId": "c2e8", "professorId": "f05d" }
+  ]
+}
